@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import { randomUUID } from "crypto";
 import { getSquareClient, getSquareLocationId } from "@/lib/square";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth-options";
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
     // Create subscription checkout using QuickPay pattern
     const checkout = squareClient.checkout;
     const checkoutResponse = await checkout.paymentLinks.create({
-      idempotencyKey: require('crypto').randomUUID(),
+      idempotencyKey: randomUUID(),
       quickPay: {
         name: `Subscription Plan`,
         priceMoney: {
