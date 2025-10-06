@@ -18,7 +18,7 @@ function getSquarePaymentSuccessUrl(invoiceId: string): string {
   return `${devUrl}${devUrl.includes('?') ? '&' : '?'}invoice=${invoiceId}`;
 }
 
-export async function maybeCreateSquarePaymentLink(invoice: Invoice & { lineItems: InvoiceLine[] }) {
+export async function maybeCreateSquarePaymentLink(invoice: Invoice & { lineItems: InvoiceLine[]; customer?: { email?: string | null } }) {
   console.log('🟦 Attempting to create Square payment link for invoice:', invoice.number);
   
   // Validate invoice data before attempting Square integration
