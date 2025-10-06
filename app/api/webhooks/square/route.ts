@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleSubscriptionEvent(event: any) {
+async function handleSubscriptionEvent(event: { data?: { object?: { subscription?: any } } }) {
   try {
     const subscription = event.data?.object?.subscription;
     if (!subscription) {
@@ -104,7 +104,7 @@ async function handleSubscriptionEvent(event: any) {
   }
 }
 
-async function handlePaymentEvent(event: any) {
+async function handlePaymentEvent(event: { data?: { object?: { invoice?: any } } }) {
   try {
     const invoice = event.data?.object?.invoice;
     if (!invoice) {

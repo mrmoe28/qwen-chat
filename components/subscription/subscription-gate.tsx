@@ -21,7 +21,7 @@ interface SubscriptionGateProps {
 }
 
 export function SubscriptionGate({ children, planVariationId }: SubscriptionGateProps) {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingSubscription, setIsCreatingSubscription] = useState(false);
