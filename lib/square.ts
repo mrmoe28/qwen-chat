@@ -1,8 +1,8 @@
-import { Client, Environment } from 'square';
+import { SquareClient, SquareEnvironment } from 'square';
 
-let squareClient: Client | null = null;
+let squareClient: SquareClient | null = null;
 
-export function getSquareClient(): Client | null {
+export function getSquareClient(): SquareClient | null {
   if (!squareClient) {
     const accessToken = process.env.SQUARE_ACCESS_TOKEN;
     const environment = process.env.SQUARE_ENVIRONMENT;
@@ -13,9 +13,9 @@ export function getSquareClient(): Client | null {
       return null;
     }
 
-    const env = environment === 'production' ? Environment.Production : Environment.Sandbox;
+    const env = environment === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox;
     
-    squareClient = new Client({
+    squareClient = new SquareClient({
       accessToken,
       environment: env,
       applicationId,
