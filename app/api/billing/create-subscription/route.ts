@@ -59,21 +59,22 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Create subscription checkout
+    // Create subscription checkout using QuickPay pattern
     const checkout = squareClient.checkout;
     const checkoutResponse = await checkout.paymentLinks.create({
-      orderRequest: {
-        order: {
-          locationId,
-          subscriptionPlanId: planVariationId,
+      idempotencyKey: require('crypto').randomUUID(),
+      quickPay: {
+        name: `Subscription Plan`,
+        priceMoney: {
+          amount: BigInt(2999), // $29.99 in cents
+          currency: 'USD'
         },
+        locationId: locationId
       },
+      paymentNote: `Subscription: ${planVariationId}`,
       checkoutOptions: {
-        redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?subscription=success`,
-      },
-      prePopulatedData: {
-        buyerEmail: user.email,
-      },
+        redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?subscription=success`
+      }
     });
 
     if (checkoutResponse.errors) {
