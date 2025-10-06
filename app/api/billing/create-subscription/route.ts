@@ -36,18 +36,18 @@ export async function POST(request: NextRequest) {
 
     if (!squareCustomerId) {
       // Create Square customer
-      const customerResponse = await squareClient.customers.createCustomer({
+      const customerResponse = await squareClient.customersApi.createCustomer({
         givenName: user.name?.split(" ")[0] || "Customer",
         familyName: user.name?.split(" ").slice(1).join(" ") || "",
         emailAddress: user.email,
       });
 
-      if (customerResponse.result.errors) {
-        console.error("Square customer creation errors:", customerResponse.result.errors);
+      if (customerResponse.errors) {
+        console.error("Square customer creation errors:", customerResponse.errors);
         return NextResponse.json({ error: "Failed to create customer" }, { status: 500 });
       }
 
-      squareCustomerId = customerResponse.result.customer?.id;
+      squareCustomerId = customerResponse.customer?.id;
       if (!squareCustomerId) {
         return NextResponse.json({ error: "Failed to get customer ID" }, { status: 500 });
       }
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create subscription checkout
-    const checkoutResponse = await squareClient.checkout.createPaymentLink({
+    const checkoutResponse = await squareClient.checkout.paymentLinks.create({
       orderRequest: {
         order: {
           locationId,
@@ -75,12 +75,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    if (checkoutResponse.result.errors) {
-      console.error("Square checkout creation errors:", checkoutResponse.result.errors);
+    if (checkoutResponse.errors) {
+      console.error("Square checkout creation errors:", checkoutResponse.errors);
       return NextResponse.json({ error: "Failed to create checkout" }, { status: 500 });
     }
 
-    const paymentLink = checkoutResponse.result.paymentLink;
+    const paymentLink = checkoutResponse.paymentLink;
     if (!paymentLink?.url) {
       return NextResponse.json({ error: "Failed to create payment link" }, { status: 500 });
     }
