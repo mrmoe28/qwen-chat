@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     if (!squareCustomerId) {
       // Create Square customer
-      const customerResponse = await squareClient.customersApi.createCustomer({
+      const customerResponse = await squareClient.customers.createCustomer({
         givenName: user.name?.split(" ")[0] || "Customer",
         familyName: user.name?.split(" ").slice(1).join(" ") || "",
         emailAddress: user.email,
