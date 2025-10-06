@@ -63,6 +63,7 @@ type InvoiceFormInvoice = {
   status: InvoiceFormValues["status"];
   notes?: string | null;
   paymentLinkUrl?: string | null;
+  paymentProcessor?: InvoiceFormValues["paymentProcessor"] | null;
   requiresDeposit?: boolean;
   depositType?: InvoiceFormValues["depositType"] | null;
   depositValue?: number | null;
