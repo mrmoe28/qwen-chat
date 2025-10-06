@@ -15,7 +15,7 @@ import {
 } from "@/lib/services/invoice-notification-service";
 import { invoiceFormSchema, type InvoiceFormValues } from "@/lib/validations/invoice";
 
-async function createPaymentLink(invoice: any, processor: string) {
+async function createPaymentLink(invoice: any, processor: string): Promise<string | null> {
   if (processor === "SQUARE") {
     return await maybeCreateSquarePaymentLink(invoice);
   } else {

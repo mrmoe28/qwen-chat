@@ -19,7 +19,6 @@ function getSquarePaymentSuccessUrl(invoiceId: string): string {
 }
 
 export async function maybeCreateSquarePaymentLink(invoice: Invoice & { lineItems: InvoiceLine[] }) {
-  const startTime = Date.now();
   console.log('🟦 Attempting to create Square payment link for invoice:', invoice.number);
   
   // Validate invoice data before attempting Square integration
