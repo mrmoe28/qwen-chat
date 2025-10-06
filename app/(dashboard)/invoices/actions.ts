@@ -19,7 +19,8 @@ async function createPaymentLink(invoice: Invoice & { lineItems: InvoiceLine[] }
   if (processor === "SQUARE") {
     return await maybeCreateSquarePaymentLink(invoice);
   } else {
-    return await maybeCreateStripePaymentLink(invoice);
+    const result = await maybeCreateStripePaymentLink(invoice);
+    return result ?? null;
   }
 }
 
