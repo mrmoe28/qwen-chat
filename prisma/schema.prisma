@@ -55,6 +55,7 @@ enum DepositType {
 }
 
 enum PaymentProcessor {
+  STRIPE
   SQUARE
 }
 
@@ -74,6 +75,12 @@ model User {
   memberships         Membership[]
   accounts            Account[]
   sessions            Session[]
+  // Subscription fields
+  squareCustomerId    String?      @unique
+  subscriptionId      String?      @unique
+  subscriptionPlan    String?
+  subscriptionStatus  String       @default("none") // active | past_due | canceled | none
+  subscriptionExpiry  DateTime?
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
 }

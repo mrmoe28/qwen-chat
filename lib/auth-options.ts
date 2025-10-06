@@ -1,9 +1,13 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { compare } from "bcryptjs";
+import { Resend } from "resend";
 
 import { prisma } from "@/lib/prisma";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function resolveWorkspaceMeta(userId: string) {
   try {
@@ -72,6 +76,37 @@ export const authOptions: NextAuthOptions = {
     },
   },
   providers: [
+    EmailProvider({
+      server: {
+        host: process.env.EMAIL_SERVER_HOST,
+        port: Number(process.env.EMAIL_SERVER_PORT),
+        auth: {
+          user: process.env.EMAIL_SERVER_USER,
+          pass: process.env.EMAIL_SERVER_PASSWORD,
+        },
+      },
+      from: process.env.EMAIL_FROM,
+      async sendVerificationRequest({ identifier, url, provider }) {
+        try {
+          await resend.emails.send({
+            from: provider.from!,
+            to: identifier,
+            subject: "Sign in to Ledgerflow",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h1 style="color: #333;">Sign in to Ledgerflow</h1>
+                <p>Click the button below to sign in to your account:</p>
+                <a href="${url}" style="display: inline-block; background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">Sign In</a>
+                <p style="color: #666; font-size: 14px;">This link will expire in 24 hours. If you didn't request this email, you can safely ignore it.</p>
+              </div>
+            `,
+          });
+        } catch (error) {
+          console.error("Failed to send verification email:", error);
+          throw new Error("Failed to send verification email");
+        }
+      },
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
