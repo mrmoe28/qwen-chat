@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { InvoiceStatus } from "@prisma/client";
+import { InvoiceStatus, type Invoice, type InvoiceLine } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
@@ -15,7 +15,7 @@ import {
 } from "@/lib/services/invoice-notification-service";
 import { invoiceFormSchema, type InvoiceFormValues } from "@/lib/validations/invoice";
 
-async function createPaymentLink(invoice: any, processor: string): Promise<string | null> {
+async function createPaymentLink(invoice: Invoice & { lineItems: InvoiceLine[] }, processor: string): Promise<string | null> {
   if (processor === "SQUARE") {
     return await maybeCreateSquarePaymentLink(invoice);
   } else {
