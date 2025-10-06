@@ -6,7 +6,6 @@ import { InvoiceStatus, type Invoice, type InvoiceLine } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { maybeCreateStripePaymentLink } from "@/lib/services/payment-link-service";
 import { maybeCreateSquarePaymentLink } from "@/lib/services/square-payment-service";
 import { createInvoice, updateInvoice, deleteInvoice } from "@/lib/services/invoice-service";
 import {
@@ -15,13 +14,8 @@ import {
 } from "@/lib/services/invoice-notification-service";
 import { invoiceFormSchema, type InvoiceFormValues } from "@/lib/validations/invoice";
 
-async function createPaymentLink(invoice: Invoice & { lineItems: InvoiceLine[] }, processor: string): Promise<string | null> {
-  if (processor === "SQUARE") {
-    return await maybeCreateSquarePaymentLink(invoice);
-  } else {
-    const result = await maybeCreateStripePaymentLink(invoice);
-    return result ?? null;
-  }
+async function createPaymentLink(invoice: Invoice & { lineItems: InvoiceLine[] }): Promise<string | null> {
+  return await maybeCreateSquarePaymentLink(invoice);
 }
 
 export async function createInvoiceAction(rawValues: InvoiceFormValues) {
@@ -31,11 +25,10 @@ export async function createInvoiceAction(rawValues: InvoiceFormValues) {
   const invoice = await createInvoice(user.workspaceId, values);
 
   console.log('🔗 Payment link enabled:', values.enablePaymentLink);
-  console.log('🔗 Payment processor:', values.paymentProcessor);
   let createdPaymentLink: string | null = null;
   if (values.enablePaymentLink) {
-    console.log('🔗 Creating payment link for invoice:', invoice.number, 'with processor:', values.paymentProcessor);
-    const paymentLink = await createPaymentLink(invoice, values.paymentProcessor);
+    console.log('🔗 Creating Square payment link for invoice:', invoice.number);
+    const paymentLink = await createPaymentLink(invoice);
     if (paymentLink) {
       console.log('✅ Payment link created, updating invoice with URL:', paymentLink);
       await prisma.invoice.update({
@@ -82,7 +75,7 @@ export async function updateInvoiceAction(invoiceId: string, rawValues: InvoiceF
   let updatedPaymentLink: string | null = null;
 
   if (values.enablePaymentLink) {
-    const paymentLink = await createPaymentLink(updated, values.paymentProcessor);
+    const paymentLink = await createPaymentLink(updated);
     if (paymentLink) {
       latestInvoice = await prisma.invoice.update({
         where: { id: updated.id },
@@ -130,7 +123,7 @@ export async function updateInvoiceStatusAction(invoiceId: string, status: Invoi
   // Create payment link if sending and not already created
   let paymentLinkToUse = invoice.paymentLinkUrl;
   if (status === InvoiceStatus.SENT && !invoice.paymentLinkUrl) {
-    const paymentLink = await createPaymentLink(invoice, invoice.paymentProcessor || "STRIPE");
+    const paymentLink = await createPaymentLink(invoice);
     if (paymentLink) {
       await prisma.invoice.update({
         where: { id: invoice.id },
@@ -184,8 +177,8 @@ export async function sendInvoiceAction(invoiceId: string) {
   console.log('📧 Sending invoice:', invoice.number, 'Has payment link:', !!invoice.paymentLinkUrl);
   let updatedPaymentLinkUrl = invoice.paymentLinkUrl;
   if (!invoice.paymentLinkUrl) {
-    console.log('🔗 Creating payment link for sending invoice with processor:', invoice.paymentProcessor);
-    const paymentLink = await createPaymentLink(invoice, invoice.paymentProcessor || "STRIPE");
+    console.log('🔗 Creating Square payment link for sending invoice');
+    const paymentLink = await createPaymentLink(invoice);
     if (paymentLink) {
       console.log('✅ Payment link created for sending, updating invoice:', paymentLink);
       await prisma.invoice.update({

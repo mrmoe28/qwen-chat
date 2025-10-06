@@ -55,7 +55,7 @@ export default async function InvoicesPage() {
         <CardContent>
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <p className="text-sm text-muted-foreground">
-              Sync status: <span className="font-medium text-foreground">Stripe webhook ready</span>
+              Sync status: <span className="font-medium text-foreground">Square webhook ready</span>
             </p>
             <div className="flex gap-2">
               <Button variant="outline">Export CSV</Button>

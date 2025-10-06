@@ -247,7 +247,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                 </a>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Generate a payment link by enabling Stripe keys and re-saving this invoice.
+                  Generate a payment link by enabling Square keys and re-saving this invoice.
                 </p>
               )}
             </CardContent>

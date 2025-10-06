@@ -31,7 +31,7 @@ export default async function NewInvoicePage({
           <div>
             <CardTitle className="text-2xl">New invoice</CardTitle>
             <CardDescription>
-              Build an invoice, generate a Stripe payment link, and send it in minutes.
+              Build an invoice, generate a Square payment link, and send it in minutes.
             </CardDescription>
           </div>
           <Button variant="outline" asChild>
@@ -43,7 +43,7 @@ export default async function NewInvoicePage({
       {customers.length === 0 ? (
         <Card>
           <CardContent className="space-y-4 py-12 text-center text-sm text-muted-foreground">
-            <p>Add a customer before creating invoices. Import Stripe customers in Settings or add one manually.</p>
+            <p>Add a customer before creating invoices. Import Square customers in Settings or add one manually.</p>
             <Button asChild variant="secondary" size="sm">
               <Link href="/customers/new">Create customer</Link>
             </Button>

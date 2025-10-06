@@ -55,7 +55,6 @@ enum DepositType {
 }
 
 enum PaymentProcessor {
-  STRIPE
   SQUARE
 }
 
@@ -156,7 +155,7 @@ model Invoice {
   depositDueDate      DateTime?
   notes               String?
   paymentLinkUrl      String?
-  paymentProcessor    PaymentProcessor? @default(STRIPE)
+  paymentProcessor    PaymentProcessor? @default(SQUARE)
   stripePaymentIntent String?        @unique
   workspace           Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId         String

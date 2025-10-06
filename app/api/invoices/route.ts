@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { maybeCreateStripePaymentLink } from "@/lib/services/payment-link-service";
+import { maybeCreateSquarePaymentLink } from "@/lib/services/square-payment-service";
 import { createInvoice, listInvoices } from "@/lib/services/invoice-service";
 import { invoiceFormSchema } from "@/lib/validations/invoice";
 
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
     const invoice = await createInvoice(user.workspaceId, values);
     if (values.enablePaymentLink) {
-      const paymentLink = await maybeCreateStripePaymentLink(invoice);
+      const paymentLink = await maybeCreateSquarePaymentLink(invoice);
       if (paymentLink) {
         const updatedInvoice = await prisma.invoice.update({
           where: { id: invoice.id },

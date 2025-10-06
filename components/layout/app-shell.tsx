@@ -69,7 +69,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="mt-auto hidden flex-col gap-2 rounded-lg bg-muted/40 p-4 text-sm text-muted-foreground lg:flex">
             <div className="flex items-center gap-3">
               <Icon name="shield" className="size-4" aria-hidden="true" />
-              Stripe Secure Payments
+              Square Secure Payments
             </div>
             <p>Collect card payments instantly with auto-reconciliation.</p>
           </div>

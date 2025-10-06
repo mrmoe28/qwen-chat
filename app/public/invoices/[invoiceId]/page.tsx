@@ -199,7 +199,7 @@ export default async function PublicInvoicePage({ params }: { params: Promise<{ 
             <CardHeader>
               <CardTitle>Payment</CardTitle>
               <CardDescription>
-                Click the button below to pay this invoice securely with Stripe
+                Click the button below to pay this invoice securely with Square
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
@@ -215,7 +215,7 @@ export default async function PublicInvoicePage({ params }: { params: Promise<{ 
                     </a>
                   </Button>
                   <p className="text-sm text-gray-600">
-                    🔒 Secure payment powered by Stripe
+                    🔒 Secure payment powered by Square
                   </p>
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                     <p className="text-xs text-gray-600 mb-2">

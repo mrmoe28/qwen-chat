@@ -52,7 +52,7 @@ export default async function CustomersPage() {
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle className="text-2xl">Customers</CardTitle>
-              <CardDescription>Stripe customer profiles with payment history.</CardDescription>
+              <CardDescription>Square customer profiles with payment history.</CardDescription>
             </div>
             <Button className="gap-2" asChild>
               <Link href="/customers/new">Add customer</Link>
@@ -111,7 +111,7 @@ export default async function CustomersPage() {
               {rows.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center text-sm text-muted-foreground">
-                    No customers yet. Import your Stripe customers or create one manually.
+                    No customers yet. Import your Square customers or create one manually.
                   </TableCell>
                 </TableRow>
               )}

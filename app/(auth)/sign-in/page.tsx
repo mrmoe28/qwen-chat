@@ -19,7 +19,7 @@ export default async function SignInPage({
         <CardHeader className="space-y-4 text-center">
           <CardTitle className="text-2xl">Sign in to {siteConfig.name}</CardTitle>
           <CardDescription>
-            Manage invoices, customers, and Stripe payments from one workspace.
+            Manage invoices, customers, and Square payments from one workspace.
           </CardDescription>
         </CardHeader>
         <CardContent>

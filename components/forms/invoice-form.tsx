@@ -63,7 +63,6 @@ type InvoiceFormInvoice = {
   status: InvoiceFormValues["status"];
   notes?: string | null;
   paymentLinkUrl?: string | null;
-  paymentProcessor?: InvoiceFormValues["paymentProcessor"] | null;
   requiresDeposit?: boolean;
   depositType?: InvoiceFormValues["depositType"] | null;
   depositValue?: number | null;
@@ -93,7 +92,7 @@ export function InvoiceForm({ customers, defaultCustomerId, invoice }: InvoiceFo
         status: invoice.status,
         notes: invoice.notes ?? "",
         enablePaymentLink: Boolean(invoice.paymentLinkUrl),
-        paymentProcessor: invoice.paymentProcessor ?? "STRIPE",
+        paymentProcessor: "SQUARE",
         requiresDeposit: Boolean(invoice.requiresDeposit),
         depositType: invoice.depositType ?? "FIXED",
         depositValue: invoice.depositValue ?? 0,
@@ -125,7 +124,7 @@ export function InvoiceForm({ customers, defaultCustomerId, invoice }: InvoiceFo
       status: "DRAFT",
       notes: "",
       enablePaymentLink: true,
-      paymentProcessor: "STRIPE",
+      paymentProcessor: "SQUARE",
       requiresDeposit: false,
       depositType: "FIXED",
       depositValue: 0,
@@ -322,30 +321,9 @@ export function InvoiceForm({ customers, defaultCustomerId, invoice }: InvoiceFo
             </label>
 
             {watch("enablePaymentLink") && (
-              <div className="space-y-2">
-                <Label htmlFor="paymentProcessor">Payment processor</Label>
-                <Controller
-                  name="paymentProcessor"
-                  control={control}
-                  render={({ field }) => (
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select payment processor" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="STRIPE">Stripe</SelectItem>
-                        <SelectItem value="SQUARE">Square</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                <p className="text-xs text-muted-foreground">
-                  {watch("paymentProcessor") === "STRIPE" 
-                    ? "Uses Stripe payment links. Requires Stripe keys to be configured."
-                    : "Uses Square checkout. Requires Square API keys to be configured."
-                  }
-                </p>
-              </div>
+              <p className="text-xs text-muted-foreground">
+                Uses Square checkout. Requires Square API keys to be configured.
+              </p>
             )}
 
             <p className="text-xs text-muted-foreground">

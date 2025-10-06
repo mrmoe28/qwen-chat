@@ -40,7 +40,7 @@ export default async function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Payments</CardTitle>
-            <CardDescription>Stripe options for checkout and reminders.</CardDescription>
+            <CardDescription>Square options for checkout and reminders.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between gap-4 rounded-lg border border-border/60 p-4">
@@ -62,7 +62,7 @@ export default async function SettingsPage() {
               <Switch />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="webhook">Stripe webhook secret</Label>
+              <Label htmlFor="webhook">Square webhook secret</Label>
               <Input id="webhook" placeholder="whsec_..." type="password" />
             </div>
             <Button className="w-full sm:w-auto">Update payment settings</Button>

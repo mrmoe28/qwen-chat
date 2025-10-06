@@ -153,7 +153,7 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle>Latest activity</CardTitle>
-            <CardDescription>Updates from Stripe payments.</CardDescription>
+            <CardDescription>Updates from Square payments.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             {payments.slice(0, 2).map((payment) => (

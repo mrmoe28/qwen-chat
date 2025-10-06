@@ -28,7 +28,7 @@ export default async function PaymentsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Payments</CardTitle>
-          <CardDescription>Stripe transaction history and settlement timeline.</CardDescription>
+          <CardDescription>Square transaction history and settlement timeline.</CardDescription>
         </CardHeader>
       </Card>
       <Card>
@@ -70,7 +70,7 @@ export default async function PaymentsPage() {
               {payments.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center text-sm text-muted-foreground">
-                    No payments yet. Collect payments via Stripe payment links to populate this table.
+                    No payments yet. Collect payments via Square payment links to populate this table.
                   </TableCell>
                 </TableRow>
               )}

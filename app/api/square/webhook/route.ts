@@ -45,8 +45,28 @@ export async function POST(request: Request) {
         const payment = event.data.object;
         console.log("✅ Processing payment.created", payment.id);
         
+        let invoiceId = null;
+        
+        // Try to get invoice ID from different sources
         if (payment && payment.reference_id) {
-          const invoiceId = payment.reference_id;
+          invoiceId = payment.reference_id;
+        } else if (payment && payment.note) {
+          // Try to extract invoice number from payment note
+          const match = payment.note.match(/Invoice:\s*([A-Z0-9-]+)/i);
+          if (match) {
+            const invoiceNumber = match[1];
+            // Find invoice by number
+            const invoice = await prisma.invoice.findFirst({
+              where: { number: invoiceNumber },
+              select: { id: true }
+            });
+            if (invoice) {
+              invoiceId = invoice.id;
+            }
+          }
+        }
+        
+        if (invoiceId) {
           
           console.log(`💰 Marking invoice ${invoiceId} as PAID from Square payment`);
           
@@ -93,8 +113,28 @@ export async function POST(request: Request) {
         const payment = event.data.object;
         console.log("🔄 Processing payment.updated", payment.id);
         
+        let invoiceId = null;
+        
+        // Try to get invoice ID from different sources
         if (payment && payment.reference_id) {
-          const invoiceId = payment.reference_id;
+          invoiceId = payment.reference_id;
+        } else if (payment && payment.note) {
+          // Try to extract invoice number from payment note
+          const match = payment.note.match(/Invoice:\s*([A-Z0-9-]+)/i);
+          if (match) {
+            const invoiceNumber = match[1];
+            // Find invoice by number
+            const invoice = await prisma.invoice.findFirst({
+              where: { number: invoiceNumber },
+              select: { id: true }
+            });
+            if (invoice) {
+              invoiceId = invoice.id;
+            }
+          }
+        }
+        
+        if (invoiceId) {
           
           // Update payment record with new status
           const existingPayment = await prisma.payment.findUnique({

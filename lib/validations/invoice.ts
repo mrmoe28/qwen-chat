@@ -29,7 +29,7 @@ export const invoiceFormSchema = z.object({
   notes: z.string().optional().nullable(),
   lineItems: invoiceLineSchema.array().min(1, "Add at least one line item"),
   enablePaymentLink: z.boolean().default(true),
-  paymentProcessor: z.enum(["STRIPE", "SQUARE"]).default("STRIPE"),
+  paymentProcessor: z.enum(["SQUARE"]).default("SQUARE"),
   requiresDeposit: z.boolean().default(false),
   depositType: z.enum(["PERCENTAGE", "FIXED"]).default("FIXED"),
   depositValue: z.union([z.string(), z.number()])

@@ -94,6 +94,10 @@ export async function maybeCreateSquarePaymentLink(invoice: Invoice & { lineItem
           currency: Square.Currency.Usd
         },
         locationId: locationId
+      },
+      paymentNote: `Invoice: ${invoice.number}`,
+      checkoutOptions: {
+        redirectUrl: successUrl
       }
     };
 
