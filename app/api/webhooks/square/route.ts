@@ -58,7 +58,15 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleSubscriptionEvent(event: { data?: { object?: { subscription?: any } } }) {
+interface SquareSubscription {
+  customer_id?: string;
+  id?: string;
+  status?: string;
+  plan_variation_id?: string;
+  charged_through_date?: string;
+}
+
+async function handleSubscriptionEvent(event: { data?: { object?: { subscription?: SquareSubscription } } }) {
   try {
     const subscription = event.data?.object?.subscription;
     if (!subscription) {
@@ -104,7 +112,13 @@ async function handleSubscriptionEvent(event: { data?: { object?: { subscription
   }
 }
 
-async function handlePaymentEvent(event: { data?: { object?: { invoice?: any } } }) {
+interface SquareInvoice {
+  primary_recipient?: {
+    customer_id?: string;
+  };
+}
+
+async function handlePaymentEvent(event: { data?: { object?: { invoice?: SquareInvoice } } }) {
   try {
     const invoice = event.data?.object?.invoice;
     if (!invoice) {
