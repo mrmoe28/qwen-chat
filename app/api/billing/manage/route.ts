@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: "No active subscription" }, { status: 400 });
         }
 
-        const cancelResponse = await squareClient.subscriptionsApi.cancelSubscription(
+        const cancelResponse = await squareClient.subscriptions.cancelSubscription(
           user.subscriptionId
         );
 
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: "No subscription to reactivate" }, { status: 400 });
         }
 
-        const resumeResponse = await squareClient.subscriptionsApi.resumeSubscription(
+        const resumeResponse = await squareClient.subscriptions.resumeSubscription(
           user.subscriptionId
         );
 
