@@ -1,5 +1,6 @@
 import type { Invoice, InvoiceLine } from "@prisma/client";
 import { randomUUID } from "crypto";
+import { Square } from "square";
 
 import { getSquareClient, getSquareLocationId } from "@/lib/square";
 import { buildEmailUrl } from "@/lib/utils/email-helpers";
@@ -62,76 +63,50 @@ export async function maybeCreateSquarePaymentLink(invoice: Invoice & { lineItem
       invoice.requiresDeposit && invoice.depositAmount && Number(invoice.depositAmount) > 0,
     );
 
-    // Convert line items to Square format
-    const orderLineItems = depositEnabled
-      ? [
-          {
-            name: `Deposit for ${invoice.number}`,
-            quantity: "1",
-            itemType: "ITEM",
-            basePriceMoney: {
-              amount: Math.round(Number(invoice.depositAmount) * 100), // Convert to cents
-              currency: "USD"
-            }
-          }
-        ]
-      : invoice.lineItems.map((item) => ({
-          name: item.description,
-          quantity: item.quantity.toString(),
-          itemType: "ITEM" as const,
-          basePriceMoney: {
-            amount: Math.round(Number(item.unitPrice) * 100), // Convert to cents
-            currency: "USD"
-          }
-        }));
-
-    // Create the order first
-    const { checkoutApi } = squareClient;
+    // Use QuickPay for simpler payment link creation
+    const checkout = squareClient.checkout;
     const successUrl = getSquarePaymentSuccessUrl(invoice.id);
     
+    // Calculate total amount to charge
+    const amountToCharge = depositEnabled 
+      ? Number(invoice.depositAmount) * 100  // Convert to cents
+      : Number(invoice.total) * 100;  // Convert to cents
+    
+    const paymentName = depositEnabled 
+      ? `Deposit for ${invoice.number}`
+      : `Invoice ${invoice.number}`;
+    
     console.log('📝 Creating Square checkout with data:', {
-      lineItemsCount: orderLineItems.length,
       currency: invoice.currency,
-      total: invoice.total,
+      amountToCharge,
       depositEnabled,
       successUrl,
-      locationId
+      locationId,
+      paymentName
     });
 
     const requestBody = {
       idempotencyKey: randomUUID(),
-      order: {
-        locationId: locationId,
-        lineItems: orderLineItems,
-        metadata: {
-          invoiceId: invoice.id,
-          invoiceNumber: invoice.number,
-          requiresDeposit: depositEnabled ? "true" : "false",
-          ...(depositEnabled && invoice.depositAmount
-            ? { depositAmount: String(Number(invoice.depositAmount)) }
-            : {}),
-          ...(depositEnabled && invoice.depositType ? { depositType: invoice.depositType } : {}),
-        }
-      },
-      checkoutOptions: {
-        redirectUrl: successUrl,
-        askForShippingAddress: false,
-      },
-      prePopulatedData: {
-        buyerEmail: invoice.customer?.email || undefined,
+      quickPay: {
+        name: paymentName,
+        priceMoney: {
+          amount: BigInt(amountToCharge),
+          currency: Square.Currency.Usd
+        },
+        locationId: locationId
       }
     };
 
-    const response = await checkoutApi.createPaymentLink(requestBody);
+    const response = await checkout.paymentLinks.create(requestBody);
 
-    if (response.result && response.result.paymentLink && response.result.paymentLink.url) {
-      const paymentLinkUrl = response.result.paymentLink.url;
+    if (response && response.paymentLink && response.paymentLink.url) {
+      const paymentLinkUrl = response.paymentLink.url;
       console.log('✅ Square payment link created successfully:', paymentLinkUrl);
-      console.log('✅ Link order ID:', response.result.paymentLink.orderId);
+      console.log('✅ Link ID:', response.paymentLink.id);
       return paymentLinkUrl;
     } else {
       const error = 'Invalid payment link returned from Square';
-      console.error('❌', error, response.result);
+      console.error('❌', error, response);
       return null;
     }
   } catch (error) {
