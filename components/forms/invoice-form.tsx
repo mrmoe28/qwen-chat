@@ -92,6 +92,7 @@ export function InvoiceForm({ customers, defaultCustomerId, invoice }: InvoiceFo
         status: invoice.status,
         notes: invoice.notes ?? "",
         enablePaymentLink: Boolean(invoice.paymentLinkUrl),
+        paymentProcessor: invoice.paymentProcessor ?? "STRIPE",
         requiresDeposit: Boolean(invoice.requiresDeposit),
         depositType: invoice.depositType ?? "FIXED",
         depositValue: invoice.depositValue ?? 0,
@@ -123,6 +124,7 @@ export function InvoiceForm({ customers, defaultCustomerId, invoice }: InvoiceFo
       status: "DRAFT",
       notes: "",
       enablePaymentLink: true,
+      paymentProcessor: "STRIPE",
       requiresDeposit: false,
       depositType: "FIXED",
       depositValue: 0,
@@ -311,12 +313,40 @@ export function InvoiceForm({ customers, defaultCustomerId, invoice }: InvoiceFo
                 defaultChecked={defaultValues.enablePaymentLink}
               />
               <span>
-                <span className="font-medium text-foreground">Generate Stripe payment link</span>
+                <span className="font-medium text-foreground">Generate payment link</span>
                 <span className="block text-xs text-muted-foreground">
-                  Creates a hosted checkout link when Stripe keys are configured.
+                  Creates a hosted checkout link for online payments.
                 </span>
               </span>
             </label>
+
+            {watch("enablePaymentLink") && (
+              <div className="space-y-2">
+                <Label htmlFor="paymentProcessor">Payment processor</Label>
+                <Controller
+                  name="paymentProcessor"
+                  control={control}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select payment processor" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="STRIPE">Stripe</SelectItem>
+                        <SelectItem value="SQUARE">Square</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {watch("paymentProcessor") === "STRIPE" 
+                    ? "Uses Stripe payment links. Requires Stripe keys to be configured."
+                    : "Uses Square checkout. Requires Square API keys to be configured."
+                  }
+                </p>
+              </div>
+            )}
+
             <p className="text-xs text-muted-foreground">
               Payment links use the invoice line items as one-time products. You can send the link or embed it in your emails.
             </p>

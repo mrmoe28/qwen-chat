@@ -1,4 +1,4 @@
-import { DepositType, InvoiceStatus, Prisma } from "@prisma/client";
+import { DepositType, InvoiceStatus, PaymentProcessor, Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import type { InvoiceFormValues } from "@/lib/validations/invoice";
@@ -90,6 +90,7 @@ export async function createInvoice(workspaceId: string, values: InvoiceFormValu
     total: new Prisma.Decimal(total),
     ...depositData,
     notes: values.notes ?? undefined,
+    paymentProcessor: values.paymentProcessor as PaymentProcessor,
     workspace: { connect: { id: workspaceId } },
     customer: { connect: { id: values.customerId } },
     lineItems: {
@@ -159,6 +160,7 @@ export async function updateInvoice(workspaceId: string, invoiceId: string, valu
       discountTotal: new Prisma.Decimal(0),
       total: new Prisma.Decimal(total),
       notes: values.notes ?? undefined,
+      paymentProcessor: values.paymentProcessor as PaymentProcessor,
       customer: { connect: { id: values.customerId } },
       lineItems: {
         deleteMany: {},
