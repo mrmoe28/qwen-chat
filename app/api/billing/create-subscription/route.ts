@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     if (!squareCustomerId) {
       // Create Square customer
-      const customerResponse = await squareClient.customers.createCustomer({
+      const customerResponse = await squareClient.customers.create({
         givenName: user.name?.split(" ")[0] || "Customer",
         familyName: user.name?.split(" ").slice(1).join(" ") || "",
         emailAddress: user.email,
@@ -60,7 +60,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Create subscription checkout
-    const checkoutResponse = await squareClient.checkout.paymentLinks.create({
+    const checkout = squareClient.checkout;
+    const checkoutResponse = await checkout.paymentLinks.create({
       orderRequest: {
         order: {
           locationId,
