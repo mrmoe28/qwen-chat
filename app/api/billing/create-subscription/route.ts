@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Failed to create customer" }, { status: 500 });
       }
 
-      squareCustomerId = customerResponse.customer?.id;
+      squareCustomerId = customerResponse.customer?.id || null;
       if (!squareCustomerId) {
         return NextResponse.json({ error: "Failed to get customer ID" }, { status: 500 });
       }
