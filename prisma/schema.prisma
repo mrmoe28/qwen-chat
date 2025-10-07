@@ -78,8 +78,12 @@ model User {
   squareCustomerId    String?      @unique
   subscriptionId      String?      @unique
   subscriptionPlan    String?
-  subscriptionStatus  String       @default("none") // active | past_due | canceled | none
+  subscriptionStatus  String       @default("trial") // trial | active | past_due | canceled | none
   subscriptionExpiry  DateTime?
+  // Free trial tracking
+  freeInvoicesUsed    Int          @default(0)
+  freeInvoicesLimit   Int          @default(3)
+  trialStartedAt      DateTime?    @default(now())
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
 }

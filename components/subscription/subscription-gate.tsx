@@ -13,6 +13,10 @@ interface SubscriptionStatus {
   expiry?: string;
   isActive: boolean;
   hasSquareCustomer: boolean;
+  freeInvoicesUsed?: number;
+  freeInvoicesLimit?: number;
+  freeInvoicesRemaining?: number;
+  trialStartedAt?: string;
 }
 
 interface SubscriptionGateProps {
@@ -106,22 +110,49 @@ export function SubscriptionGate({ children, planVariationId }: SubscriptionGate
     );
   }
 
-  if (!subscriptionStatus?.isActive) {
+  // Show subscription gate only for trial_expired or canceled users
+  if (!subscriptionStatus?.isActive && 
+      (subscriptionStatus?.status === "trial_expired" || 
+       subscriptionStatus?.status === "canceled" || 
+       subscriptionStatus?.status === "none")) {
+    
+    const isTrialExpired = subscriptionStatus?.status === "trial_expired";
+    const isCanceled = subscriptionStatus?.status === "canceled";
+    
     return (
       <div className="flex min-h-screen items-center justify-center bg-muted/50 px-4 py-8">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <Icon name="shield" className="mx-auto h-12 w-12 text-primary mb-4" />
-            <CardTitle>Subscription Required</CardTitle>
+            <CardTitle>
+              {isTrialExpired ? "Free Trial Ended" : 
+               isCanceled ? "Subscription Canceled" : 
+               "Subscription Required"}
+            </CardTitle>
             <CardDescription>
-              {subscriptionStatus?.status === "canceled" 
+              {isTrialExpired 
+                ? `You've used all ${subscriptionStatus.freeInvoicesLimit || 3} free invoices. Upgrade to Pro to continue creating unlimited invoices.`
+                : isCanceled 
                 ? "Your subscription has been canceled. Reactivate to continue using Ledgerflow."
                 : "Subscribe to access the full Ledgerflow dashboard and start managing your invoices."}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {isTrialExpired && (
+              <div className="rounded-lg border bg-orange-50 border-orange-200 p-4 mb-4">
+                <div className="flex items-center gap-2 text-orange-800 mb-2">
+                  <Icon name="bell" className="h-4 w-4" />
+                  <span className="font-medium">Trial Complete</span>
+                </div>
+                <p className="text-sm text-orange-700">
+                  You created {subscriptionStatus.freeInvoicesUsed} invoices during your free trial. 
+                  Upgrade now to create unlimited invoices and access all Pro features.
+                </p>
+              </div>
+            )}
+            
             <div className="rounded-lg border bg-muted/50 p-4">
-              <h3 className="font-medium mb-2">What you&apos;ll get:</h3>
+              <h3 className="font-medium mb-2">Pro Features:</h3>
               <ul className="space-y-1 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <Icon name="check" className="h-4 w-4 text-green-600" />
@@ -139,13 +170,16 @@ export function SubscriptionGate({ children, planVariationId }: SubscriptionGate
                   <Icon name="check" className="h-4 w-4 text-green-600" />
                   Email notifications and reminders
                 </li>
+                <li className="flex items-center gap-2">
+                  <Icon name="check" className="h-4 w-4 text-green-600" />
+                  Priority customer support
+                </li>
               </ul>
             </div>
             
-            {subscriptionStatus?.status === "canceled" ? (
+            {isCanceled ? (
               <Button 
                 onClick={() => {
-                  // Handle reactivation
                   fetch("/api/billing/manage", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -163,20 +197,24 @@ export function SubscriptionGate({ children, planVariationId }: SubscriptionGate
                 onClick={createSubscription}
                 disabled={isCreatingSubscription}
                 className="w-full"
+                size="lg"
               >
                 {isCreatingSubscription ? (
                   <>
                     <Icon name="loader" className="mr-2 h-4 w-4 animate-spin" />
-                    Creating...
+                    Creating checkout...
                   </>
                 ) : (
-                  "Subscribe Now"
+                  <>
+                    Upgrade to Pro - $29.99/month
+                    <Icon name="arrowRight" className="ml-2 h-4 w-4" />
+                  </>
                 )}
               </Button>
             )}
             
             <p className="text-xs text-center text-muted-foreground">
-              Current status: {subscriptionStatus?.status || "none"}
+              No setup fees • Cancel anytime • Secure checkout via Square
             </p>
           </CardContent>
         </Card>

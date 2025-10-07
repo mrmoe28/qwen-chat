@@ -12,9 +12,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { planVariationId } = await request.json();
-    // planVariationId is optional - we use QuickPay for subscription checkout
+    await request.json(); // Parse request body but don't need planVariationId
 
+    // Fast configuration check
     const squareClient = getSquareClient();
     const locationId = getSquareLocationId();
     
@@ -22,57 +22,37 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Square configuration missing" }, { status: 500 });
     }
 
-    // Find or create Square customer
+    // Quick user lookup with minimal fields
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        squareCustomerId: true,
+      },
     });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    let squareCustomerId = user.squareCustomerId;
-
-    if (!squareCustomerId) {
-      // Create Square customer
-      const customerResponse = await squareClient.customers.create({
-        givenName: user.name?.split(" ")[0] || "Customer",
-        familyName: user.name?.split(" ").slice(1).join(" ") || "",
-        emailAddress: user.email,
-      });
-
-      if (customerResponse.errors) {
-        console.error("Square customer creation errors:", customerResponse.errors);
-        return NextResponse.json({ error: "Failed to create customer" }, { status: 500 });
-      }
-
-      squareCustomerId = customerResponse.customer?.id || null;
-      if (!squareCustomerId) {
-        return NextResponse.json({ error: "Failed to get customer ID" }, { status: 500 });
-      }
-
-      // Update user with Square customer ID
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { squareCustomerId },
-      });
-    }
-
-    // Create subscription checkout using QuickPay pattern
-    const checkout = squareClient.checkout;
-    const checkoutResponse = await checkout.paymentLinks.create({
+    // Create payment link immediately - customer creation can happen async
+    const checkoutResponse = await squareClient.checkout.paymentLinks.create({
       idempotencyKey: randomUUID(),
       quickPay: {
-        name: `Subscription Plan`,
+        name: `Pro Subscription - $29.99/month`,
         priceMoney: {
           amount: BigInt(2999), // $29.99 in cents
           currency: 'USD'
         },
         locationId: locationId
       },
-      paymentNote: `Subscription: ${planVariationId}`,
+      paymentNote: `Ledgerflow Pro Subscription`,
       checkoutOptions: {
-        redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?subscription=success`
+        redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?subscription=success`,
+        allowTipping: false,
+        askForShippingAddress: false,
       }
     });
 
@@ -84,6 +64,24 @@ export async function POST(request: NextRequest) {
     const paymentLink = checkoutResponse.paymentLink;
     if (!paymentLink?.url) {
       return NextResponse.json({ error: "Failed to create payment link" }, { status: 500 });
+    }
+
+    // Async customer creation in background if needed (don't await)
+    if (!user.squareCustomerId) {
+      squareClient.customers.create({
+        givenName: user.name?.split(" ")[0] || "Customer",
+        familyName: user.name?.split(" ").slice(1).join(" ") || "",
+        emailAddress: user.email,
+      }).then(async (customerResponse) => {
+        if (!customerResponse.errors && customerResponse.customer?.id) {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { squareCustomerId: customerResponse.customer.id },
+          });
+        }
+      }).catch(error => {
+        console.error("Background Square customer creation failed:", error);
+      });
     }
 
     return NextResponse.json({

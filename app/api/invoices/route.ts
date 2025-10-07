@@ -19,6 +19,17 @@ export async function POST(request: Request) {
     const values = invoiceFormSchema.parse(body);
 
     const invoice = await createInvoice(user.workspaceId, values);
+    
+    // Track usage for trial users (async, don't await)
+    fetch("/api/billing/track-usage", {
+      method: "POST",
+      headers: {
+        "cookie": request.headers.get("cookie") || "",
+      },
+    }).catch(error => {
+      console.error("Failed to track invoice usage:", error);
+    });
+
     if (values.enablePaymentLink) {
       const paymentLink = await maybeCreateSquarePaymentLink(invoice);
       if (paymentLink) {

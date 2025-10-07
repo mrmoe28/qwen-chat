@@ -18,6 +18,9 @@ export async function GET() {
         subscriptionId: true,
         subscriptionExpiry: true,
         squareCustomerId: true,
+        freeInvoicesUsed: true,
+        freeInvoicesLimit: true,
+        trialStartedAt: true,
       },
     });
 
@@ -27,14 +30,21 @@ export async function GET() {
 
     const isActive = user.subscriptionStatus === "active";
     const hasExpired = user.subscriptionExpiry ? new Date() > user.subscriptionExpiry : false;
+    const isTrialActive = user.subscriptionStatus === "trial" && 
+                         (user.freeInvoicesUsed || 0) < (user.freeInvoicesLimit || 3);
 
     return NextResponse.json({
       status: user.subscriptionStatus,
       plan: user.subscriptionPlan,
       subscriptionId: user.subscriptionId,
       expiry: user.subscriptionExpiry,
-      isActive: isActive && !hasExpired,
+      isActive: (isActive && !hasExpired) || isTrialActive,
       hasSquareCustomer: !!user.squareCustomerId,
+      // Free trial information
+      freeInvoicesUsed: user.freeInvoicesUsed || 0,
+      freeInvoicesLimit: user.freeInvoicesLimit || 3,
+      freeInvoicesRemaining: (user.freeInvoicesLimit || 3) - (user.freeInvoicesUsed || 0),
+      trialStartedAt: user.trialStartedAt,
     });
 
   } catch (error) {
