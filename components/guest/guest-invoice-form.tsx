@@ -84,7 +84,7 @@ export function GuestInvoiceForm() {
           {stats.invoicesRemaining > 0 ? (
             <>You have {stats.invoicesRemaining} free invoice{stats.invoicesRemaining !== 1 ? 's' : ''} remaining</>
           ) : (
-            <>You've used all your free invoices. Sign up to continue.</>
+            <>You&apos;ve used all your free invoices. Sign up to continue.</>
           )}
         </CardDescription>
       </CardHeader>
