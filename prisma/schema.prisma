@@ -55,7 +55,6 @@ enum DepositType {
 }
 
 enum PaymentProcessor {
-  STRIPE
   SQUARE
 }
 

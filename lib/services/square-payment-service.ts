@@ -15,7 +15,7 @@ function getSquarePaymentSuccessUrl(invoiceId: string): string {
   }
   
   // In development
-  const devUrl = process.env.STRIPE_REDIRECT_BASE_URL || buildEmailUrl('payment-success');
+  const devUrl = process.env.SQUARE_REDIRECT_BASE_URL || buildEmailUrl('payment-success');
   return `${devUrl}${devUrl.includes('?') ? '&' : '?'}invoice=${invoiceId}`;
 }
 
