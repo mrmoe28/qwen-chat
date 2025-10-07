@@ -275,7 +275,7 @@ export default function DashboardPage() {
                     <TableCell>{formatDate(invoice.issueDate)}</TableCell>
                     <TableCell>{formatCurrency(Number(invoice.total ?? 0))}</TableCell>
                     <TableCell>
-                      <Badge variant={statusVariant[invoice.status]}>{invoice.status.toLowerCase()}</Badge>
+                      <Badge variant={statusVariant[invoice.status as keyof typeof statusVariant] || "outline"}>{invoice.status.toLowerCase()}</Badge>
                     </TableCell>
                   </TableRow>
                 ))}
