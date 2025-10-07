@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { GuestService } from "@/lib/services/guest-service";
 import { generateProfessionalInvoiceHTML } from "@/lib/utils/invoice-template";
+import { SendGuestInvoiceButton } from "@/components/guest/send-guest-invoice-button";
 
 interface GuestInvoice {
   id: string;
@@ -37,6 +38,13 @@ export default function GuestInvoicesPage() {
     setInvoices(loadedInvoices);
     setStats(GuestService.getSessionStats());
   }, []);
+
+  const handleStatusChange = () => {
+    // Refresh the invoices list after status change
+    const loadedInvoices = GuestService.getInvoices();
+    setInvoices(loadedInvoices);
+    setStats(GuestService.getSessionStats());
+  };
 
   const formatAmount = (cents: number) => {
     return `$${(cents / 100).toFixed(2)}`;
@@ -180,19 +188,29 @@ export default function GuestInvoicesPage() {
                   </div>
                   <div className="text-right space-y-2">
                     <p className="text-2xl font-bold">{formatAmount(invoice.amount)}</p>
-                    <div className="space-x-2">
-                      <Link href={`/guest/invoice/${invoice.id}`}>
-                        <Button variant="outline" size="sm">
-                          View
+                    <div className="space-x-2 space-y-2">
+                      {invoice.customerEmail && invoice.status !== 'sent' && (
+                        <div className="mb-2">
+                          <SendGuestInvoiceButton 
+                            invoice={invoice} 
+                            onStatusChange={handleStatusChange}
+                          />
+                        </div>
+                      )}
+                      <div className="space-x-2">
+                        <Link href={`/guest/invoice/${invoice.id}`}>
+                          <Button variant="outline" size="sm">
+                            View
+                          </Button>
+                        </Link>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => downloadInvoice(invoice)}
+                        >
+                          Download
                         </Button>
-                      </Link>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => downloadInvoice(invoice)}
-                      >
-                        Download
-                      </Button>
+                      </div>
                     </div>
                   </div>
                 </div>

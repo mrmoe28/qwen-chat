@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { GuestService } from "@/lib/services/guest-service";
 import { generateProfessionalInvoiceHTML } from "@/lib/utils/invoice-template";
+import { SendGuestInvoiceButton } from "@/components/guest/send-guest-invoice-button";
 
 interface GuestInvoice {
   id: string;
@@ -41,6 +42,14 @@ export default function GuestInvoiceDetailPage() {
       setLoading(false);
     }
   }, [params.id]);
+
+  const handleStatusChange = () => {
+    // Refresh the invoice data after status change
+    if (params.id) {
+      const updatedInvoice = GuestService.getInvoice(params.id as string);
+      setInvoice(updatedInvoice);
+    }
+  };
 
   const formatAmount = (cents: number) => {
     return `$${(cents / 100).toFixed(2)}`;
@@ -127,6 +136,12 @@ export default function GuestInvoiceDetailPage() {
             <h1 className="text-3xl font-bold">Invoice Details</h1>
           </div>
           <div className="flex items-center space-x-2">
+            {invoice.customerEmail && invoice.status !== 'sent' && (
+              <SendGuestInvoiceButton 
+                invoice={invoice} 
+                onStatusChange={handleStatusChange}
+              />
+            )}
             <Button onClick={handleDownload} variant="outline">
               Download
             </Button>
