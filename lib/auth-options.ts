@@ -77,18 +77,14 @@ export const authOptions: NextAuthOptions = {
   },
   providers: [
     EmailProvider({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: Number(process.env.EMAIL_SERVER_PORT),
-        auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        },
-      },
-      from: process.env.EMAIL_FROM,
+      from: process.env.EMAIL_FROM || "noreply@ledgerflow.org",
       async sendVerificationRequest({ identifier, url, provider }) {
         try {
-          await resend.emails.send({
+          console.log("Attempting to send verification email to:", identifier);
+          console.log("Using from address:", provider.from);
+          console.log("Resend API key exists:", !!process.env.RESEND_API_KEY);
+          
+          const result = await resend.emails.send({
             from: provider.from!,
             to: identifier,
             subject: "Sign in to Ledgerflow",
@@ -101,8 +97,11 @@ export const authOptions: NextAuthOptions = {
               </div>
             `,
           });
+          
+          console.log("Email sent successfully:", result);
         } catch (error) {
           console.error("Failed to send verification email:", error);
+          console.error("Error details:", JSON.stringify(error, null, 2));
           throw new Error("Failed to send verification email");
         }
       },
