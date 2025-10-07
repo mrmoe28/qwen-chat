@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { differenceInDays, isAfter, subDays } from "date-fns";
 
 import { RevenueChart } from "@/components/charts/revenue-chart";
@@ -7,10 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Icon } from "@/components/icons";
-import { getCurrentUser } from "@/lib/auth";
-import { listCustomers } from "@/lib/services/customer-service";
-import { listInvoices } from "@/lib/services/invoice-service";
-import { listPayments } from "@/lib/services/payment-service";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 const statusVariant = {
@@ -21,14 +21,55 @@ const statusVariant = {
   VOID: "destructive",
 } as const;
 
-export default async function DashboardPage() {
-  const user = await getCurrentUser();
-  const workspaceId = user.workspaceId;
-  const [invoices, payments, customers] = await Promise.all([
-    listInvoices(workspaceId),
-    listPayments(workspaceId),
-    listCustomers(workspaceId),
-  ]);
+interface DashboardData {
+  invoices: any[];
+  payments: any[];
+  customers: any[];
+  user: any;
+}
+
+export default function DashboardPage() {
+  const { data: session, status } = useSession();
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      fetchDashboardData();
+    }
+  }, [status, session]);
+
+  const fetchDashboardData = async () => {
+    try {
+      const response = await fetch("/api/dashboard");
+      if (response.ok) {
+        const data = await response.json();
+        setDashboardData(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Icon name="loader" className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!dashboardData) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-muted-foreground">Failed to load dashboard data</p>
+      </div>
+    );
+  }
+
+  const { invoices, payments, customers, user } = dashboardData;
   const workspaceName = user.workspaceName ?? "your workspace";
 
   const outstanding = invoices
