@@ -40,17 +40,20 @@ export default function LandingPage() {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild className="px-8 py-3">
-                <Link href="/sign-up">
-                  Start Free Trial
+                <Link href="/guest">
+                  Try Free - No Signup Required
                   <Icon name="arrowRight" className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild className="px-8 py-3">
-                <Link href="/sign-in">
-                  Sign In
+                <Link href="/sign-up">
+                  Sign Up for Full Access
                 </Link>
               </Button>
             </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              Create 3 professional invoices instantly • No credit card required
+            </p>
           </div>
         </div>
       </section>
@@ -159,12 +162,19 @@ export default function LandingPage() {
             <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
               Join thousands of service professionals who trust Ledgerflow to manage their billing and get paid faster today.
             </p>
-            <Button size="lg" variant="secondary" asChild className="px-8 py-3">
-              <Link href="/sign-up">
-                Start Your Free Trial
-                <Icon name="arrowRight" className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" variant="secondary" asChild className="px-8 py-3">
+                <Link href="/guest">
+                  Try Free Now
+                  <Icon name="arrowRight" className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild className="px-8 py-3 bg-white/10 hover:bg-white/20">
+                <Link href="/sign-up">
+                  Full Access Trial
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
