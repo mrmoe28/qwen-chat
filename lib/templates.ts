@@ -33,13 +33,13 @@ export const templates: Record<string, InvoiceTemplate> = {
     defaultLineItems: [
       {
         description: "Consulting Services - Project Strategy",
-        quantity: 8,
-        unitPrice: 150,
+        quantity: 1,
+        unitPrice: 0,
       },
       {
         description: "Implementation & Development",
-        quantity: 24,
-        unitPrice: 125,
+        quantity: 1,
+        unitPrice: 0,
       },
     ],
     defaultNotes: "Payment terms: Net 15 days. All services performed professionally and to specification.",
@@ -52,18 +52,18 @@ export const templates: Record<string, InvoiceTemplate> = {
     defaultLineItems: [
       {
         description: "Wireless Laptop Stand - Aluminum, Height Adjustable",
-        quantity: 25,
-        unitPrice: 89.99,
+        quantity: 1,
+        unitPrice: 0,
       },
       {
         description: "Mechanical Keyboard - RGB Backlit, Cherry MX Blue",
-        quantity: 15,
-        unitPrice: 129.99,
+        quantity: 1,
+        unitPrice: 0,
       },
       {
         description: "Wireless Gaming Mouse - 12000 DPI, Ergonomic",
-        quantity: 30,
-        unitPrice: 79.99,
+        quantity: 1,
+        unitPrice: 0,
       },
     ],
     defaultNotes: "Thank you for your order! All products come with manufacturer warranty. Shipping included.",
@@ -77,7 +77,7 @@ export const templates: Record<string, InvoiceTemplate> = {
       {
         description: "Monthly Subscription - Premium Plan",
         quantity: 1,
-        unitPrice: 99.99,
+        unitPrice: 0,
       },
     ],
     defaultNotes: "This is a recurring monthly charge. Next billing date: [Next Month]. Cancel anytime.",
@@ -91,7 +91,7 @@ export const templates: Record<string, InvoiceTemplate> = {
       {
         description: "Project Deposit - Website Development",
         quantity: 1,
-        unitPrice: 2500,
+        unitPrice: 0,
       },
     ],
     defaultNotes: "50% deposit required to begin project. Remaining balance due upon completion.",
@@ -113,6 +113,30 @@ export const templates: Record<string, InvoiceTemplate> = {
   },
 };
 
-export function getTemplate(templateId: string): InvoiceTemplate | null {
+import { getCustomTemplate, convertDatabaseTemplateToInvoiceTemplate } from "@/lib/services/template-service";
+
+export async function getTemplate(templateId: string, workspaceId?: string): Promise<InvoiceTemplate | null> {
+  // Check built-in templates first
+  if (templates[templateId]) {
+    return templates[templateId];
+  }
+
+  // Check for custom templates in database (server-side)
+  if (workspaceId && !templates[templateId]) {
+    try {
+      const dbTemplate = await getCustomTemplate(workspaceId, templateId);
+      if (dbTemplate) {
+        return convertDatabaseTemplateToInvoiceTemplate(dbTemplate);
+      }
+    } catch (error) {
+      console.error('Error fetching custom template:', error);
+    }
+  }
+
+  return null;
+}
+
+// Synchronous version for built-in templates only
+export function getBuiltInTemplate(templateId: string): InvoiceTemplate | null {
   return templates[templateId] || null;
 }
