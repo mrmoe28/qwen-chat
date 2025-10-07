@@ -16,6 +16,8 @@ import {
   Loader2,
   Send,
   Check,
+  Bell,
+  BarChart3,
 } from "lucide-react";
 
 export const Icons = {
@@ -31,11 +33,14 @@ export const Icons = {
   fileText: FileText,
   users: Users,
   payments: CreditCard,
+  creditCard: CreditCard,
   settings: Settings,
   x: X,
   loader: Loader2,
   send: Send,
   check: Check,
+  bell: Bell,
+  barChart: BarChart3,
 };
 
 export type IconName = keyof typeof Icons;
