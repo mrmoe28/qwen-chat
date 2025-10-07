@@ -32,12 +32,12 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: "No active subscription" }, { status: 400 });
         }
 
-        const cancelResponse = await squareClient.subscriptions.cancel(
-          user.subscriptionId
-        );
+        const cancelResponse = await squareClient.subscriptions.cancel({
+          subscriptionId: user.subscriptionId
+        });
 
-        if (cancelResponse.result.errors) {
-          console.error("Square subscription cancellation errors:", cancelResponse.result.errors);
+        if (cancelResponse.errors) {
+          console.error("Square subscription cancellation errors:", cancelResponse.errors);
           return NextResponse.json({ error: "Failed to cancel subscription" }, { status: 500 });
         }
 
@@ -56,12 +56,12 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: "No subscription to reactivate" }, { status: 400 });
         }
 
-        const resumeResponse = await squareClient.subscriptions.resume(
-          user.subscriptionId
-        );
+        const resumeResponse = await squareClient.subscriptions.resume({
+          subscriptionId: user.subscriptionId
+        });
 
-        if (resumeResponse.result.errors) {
-          console.error("Square subscription resume errors:", resumeResponse.result.errors);
+        if (resumeResponse.errors) {
+          console.error("Square subscription resume errors:", resumeResponse.errors);
           return NextResponse.json({ error: "Failed to resume subscription" }, { status: 500 });
         }
 

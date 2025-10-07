@@ -15,6 +15,7 @@ import {
   X,
   Loader2,
   Send,
+  Check,
 } from "lucide-react";
 
 export const Icons = {
@@ -34,6 +35,7 @@ export const Icons = {
   x: X,
   loader: Loader2,
   send: Send,
+  check: Check,
 };
 
 export type IconName = keyof typeof Icons;
