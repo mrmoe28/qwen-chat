@@ -15,7 +15,7 @@ export default function RecurringInvoicePreview() {
           <div>
             <h1 className="text-2xl font-bold">Recurring Invoice Template</h1>
             <div className="flex items-center gap-2 mt-1">
-              <Badge className="bg-purple-100 text-purple-800">Subscription</Badge>
+              <Badge variant="success">Subscription</Badge>
               <span className="text-sm text-muted-foreground">For subscription services and recurring billing</span>
             </div>
           </div>

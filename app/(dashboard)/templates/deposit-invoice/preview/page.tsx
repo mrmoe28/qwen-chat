@@ -15,7 +15,7 @@ export default function DepositInvoicePreview() {
           <div>
             <h1 className="text-2xl font-bold">Deposit Invoice Template</h1>
             <div className="flex items-center gap-2 mt-1">
-              <Badge className="bg-yellow-100 text-yellow-800">Deposits</Badge>
+              <Badge variant="warning">Deposits</Badge>
               <span className="text-sm text-muted-foreground">For projects requiring upfront deposits or milestone payments</span>
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function DepositInvoicePreview() {
                       </td>
                       <td className="px-4 py-4 text-right font-medium text-yellow-600">$13,500.00</td>
                       <td className="px-4 py-4 text-center">
-                        <Badge className="bg-yellow-100 text-yellow-800">Due Now</Badge>
+                        <Badge variant="warning">Due Now</Badge>
                       </td>
                     </tr>
                     <tr>

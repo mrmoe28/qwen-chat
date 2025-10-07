@@ -46,3 +46,8 @@ Environment variables live in `.env`; copy `.env.example` and fill in your Strip
 - Advanced analytics (cashflow forecasts, retention insights) and automated reminders
 
 Contributions and feedback welcome as we expand the invoicing experience.
+
+## Template System
+- 6 professional invoice templates with industry-specific features
+- Preview system for template selection and customization
+- Template-based invoice creation workflow
