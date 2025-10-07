@@ -99,6 +99,7 @@ export const authOptions: NextAuthOptions = {
             id: user.id,
             email: user.email,
             name: user.name,
+            isAdmin: user.isAdmin,
           };
         } catch (error) {
           console.error("Authentication error:", error);
@@ -114,6 +115,7 @@ export const authOptions: NextAuthOptions = {
           token.sub = user.id;
           token.email = user.email;
           token.name = user.name;
+          token.isAdmin = Boolean((user as { isAdmin?: boolean }).isAdmin);
           const workspace = await resolveWorkspaceMeta(user.id);
           if (workspace) {
             token.workspaceId = workspace.id;
@@ -139,6 +141,7 @@ export const authOptions: NextAuthOptions = {
           session.user.id = token.sub;
           session.user.email = token.email as string | undefined;
           session.user.name = token.name as string | undefined;
+          session.user.isAdmin = token.isAdmin as boolean | undefined;
           if (token.workspaceId) {
             session.user.workspaceId = token.workspaceId as string;
             session.user.workspaceName = token.workspaceName as string | undefined;

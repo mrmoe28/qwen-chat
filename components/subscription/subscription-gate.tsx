@@ -25,7 +25,7 @@ interface SubscriptionGateProps {
 }
 
 export function SubscriptionGate({ children, planVariationId }: SubscriptionGateProps) {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingSubscription, setIsCreatingSubscription] = useState(false);
@@ -108,6 +108,11 @@ export function SubscriptionGate({ children, planVariationId }: SubscriptionGate
         </Card>
       </div>
     );
+  }
+
+  // Admin users bypass subscription gates
+  if (session?.user?.isAdmin) {
+    return <>{children}</>;
   }
 
   // Show subscription gate only for trial_expired or canceled users

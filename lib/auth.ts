@@ -85,4 +85,36 @@ export const getCurrentWorkspace = cache(async () => {
   };
 });
 
+export const requireAdmin = cache(async () => {
+  const session = await getCurrentSession();
+  if (!session?.user?.id) {
+    redirect("/sign-in");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { isAdmin: true, email: true, name: true },
+  });
+
+  if (!user?.isAdmin) {
+    redirect("/sign-in?error=unauthorized");
+  }
+
+  return user;
+});
+
+export const isAdmin = cache(async () => {
+  const session = await getCurrentSession();
+  if (!session?.user?.id) {
+    return false;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { isAdmin: true },
+  });
+
+  return user?.isAdmin || false;
+});
+
 export type CurrentUser = Awaited<ReturnType<typeof getCurrentUser>>;
