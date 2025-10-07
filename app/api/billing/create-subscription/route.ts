@@ -13,9 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { planVariationId } = await request.json();
-    if (!planVariationId) {
-      return NextResponse.json({ error: "Plan variation ID required" }, { status: 400 });
-    }
+    // planVariationId is optional - we use QuickPay for subscription checkout
 
     const squareClient = getSquareClient();
     const locationId = getSquareLocationId();

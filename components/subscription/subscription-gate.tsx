@@ -63,9 +63,12 @@ export function SubscriptionGate({ children, planVariationId }: SubscriptionGate
         const data = await response.json();
         if (data.checkoutUrl) {
           window.location.href = data.checkoutUrl;
+        } else {
+          console.error("No checkout URL in response:", data);
         }
       } else {
-        console.error("Failed to create subscription");
+        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+        console.error("Failed to create subscription:", response.status, errorData);
       }
     } catch (error) {
       console.error("Error creating subscription:", error);
