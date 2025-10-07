@@ -116,7 +116,7 @@ export class GuestService {
     localStorage.removeItem(GUEST_SESSION_KEY);
   }
 
-  static transferToUser(userEmail: string): GuestInvoice[] {
+  static transferToUser(): GuestInvoice[] {
     // This would be called during sign-up to transfer guest invoices to the new user
     const invoices = this.getInvoices();
     this.clearSession();

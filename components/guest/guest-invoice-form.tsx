@@ -92,7 +92,7 @@ export function GuestInvoiceForm() {
         {!stats.canCreateMore ? (
           <div className="text-center space-y-4">
             <p className="text-muted-foreground">
-              You've created {stats.invoicesCreated} free invoices. Sign up now to create unlimited invoices!
+              You&apos;ve created {stats.invoicesCreated} free invoices. Sign up now to create unlimited invoices!
             </p>
             <Button onClick={() => router.push('/sign-up')} className="w-full">
               Sign Up Now

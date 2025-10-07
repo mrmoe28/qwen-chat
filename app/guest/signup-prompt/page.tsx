@@ -26,7 +26,7 @@ export default function SignupPromptPage() {
             <div>
               <h2 className="text-2xl font-bold text-green-900">Invoice Created Successfully!</h2>
               <p className="text-green-700 mt-2">
-                You've now created {stats.invoicesCreated} of your {stats.invoiceLimit} free invoices.
+                You&apos;ve now created {stats.invoicesCreated} of your {stats.invoiceLimit} free invoices.
               </p>
             </div>
           </CardContent>
@@ -37,7 +37,7 @@ export default function SignupPromptPage() {
           <CardHeader className="text-center">
             <CardTitle className="text-3xl">Ready to Unlock More?</CardTitle>
             <CardDescription className="text-lg">
-              You've experienced how easy invoice creation can be. Sign up now for unlimited invoices and advanced features.
+              You&apos;ve experienced how easy invoice creation can be. Sign up now for unlimited invoices and advanced features.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -109,7 +109,7 @@ export default function SignupPromptPage() {
         <Card className="bg-muted/50">
           <CardContent className="pt-6 text-center">
             <blockquote className="text-lg italic text-muted-foreground">
-              "Ledgerflow made invoicing so simple. I went from 30 minutes per invoice to just 2 minutes!"
+              &ldquo;Ledgerflow made invoicing so simple. I went from 30 minutes per invoice to just 2 minutes!&rdquo;
             </blockquote>
             <footer className="mt-2 text-sm font-medium">
               — Sarah, Freelance Designer

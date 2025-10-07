@@ -57,7 +57,7 @@ export default function GuestInvoicesPage() {
           <div className="text-center space-y-6">
             <h1 className="text-3xl font-bold">Your Invoices</h1>
             <p className="text-muted-foreground">
-              You haven't created any invoices yet. Get started with your first free invoice!
+              You haven&apos;t created any invoices yet. Get started with your first free invoice!
             </p>
             <Link href="/guest">
               <Button>Create Your First Invoice</Button>
@@ -79,7 +79,7 @@ export default function GuestInvoicesPage() {
               {stats.invoicesRemaining > 0 ? (
                 <>You have {stats.invoicesRemaining} free invoice{stats.invoicesRemaining !== 1 ? 's' : ''} remaining</>
               ) : (
-                <>You've used all your free invoices</>
+                <>You&apos;ve used all your free invoices</>
               )}
             </p>
           </div>
@@ -168,7 +168,7 @@ export default function GuestInvoicesPage() {
             <CardContent className="pt-6 text-center space-y-4">
               <h3 className="text-xl font-semibold">Ready for unlimited invoices?</h3>
               <p className="text-muted-foreground">
-                You've tried our free plan. Sign up now to create unlimited professional invoices with advanced features.
+                You&apos;ve tried our free plan. Sign up now to create unlimited professional invoices with advanced features.
               </p>
               <Link href="/sign-up">
                 <Button size="lg">Sign Up Now</Button>
