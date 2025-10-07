@@ -18,6 +18,8 @@ import {
   Check,
   Bell,
   BarChart3,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 export const Icons = {
@@ -41,6 +43,8 @@ export const Icons = {
   check: Check,
   bell: Bell,
   barChart: BarChart3,
+  sun: Sun,
+  moon: Moon,
 };
 
 export type IconName = keyof typeof Icons;
