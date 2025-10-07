@@ -74,15 +74,6 @@ export function SignInForm() {
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? "Signing in..." : "Sign in"}
       </Button>
-      
-      <div className="text-center">
-        <Link 
-          href="/admin" 
-          className="text-xs text-muted-foreground hover:text-primary transition-colors"
-        >
-          Admin Access
-        </Link>
-      </div>
     </form>
   );
 }
