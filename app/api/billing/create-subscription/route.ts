@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { randomUUID } from "crypto";
-import { getSquareClient, getSquareLocationId } from "@/lib/square";
+import { getSquareClientSync, getSquareLocationIdSync } from "@/lib/square";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth-options";
 
@@ -15,8 +15,8 @@ export async function POST(request: NextRequest) {
     await request.json(); // Parse request body but don't need planVariationId
 
     // Fast configuration check
-    const squareClient = getSquareClient();
-    const locationId = getSquareLocationId();
+    const squareClient = getSquareClientSync();
+    const locationId = getSquareLocationIdSync();
     
     if (!squareClient || !locationId) {
       return NextResponse.json({ error: "Square configuration missing" }, { status: 500 });

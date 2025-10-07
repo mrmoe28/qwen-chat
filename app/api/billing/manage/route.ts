@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { getSquareClient } from "@/lib/square";
+import { getSquareClientSync } from "@/lib/square";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth-options";
 
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const squareClient = getSquareClient();
+    const squareClient = getSquareClientSync();
     if (!squareClient) {
       return NextResponse.json({ error: "Square configuration missing" }, { status: 500 });
     }

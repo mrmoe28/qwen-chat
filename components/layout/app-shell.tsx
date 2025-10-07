@@ -9,6 +9,7 @@ import { dashboardNav, siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/icons";
+import { SettingsDropdown } from "@/components/layout/settings-dropdown";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
@@ -96,6 +97,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     New invoice
                   </Link>
                 </Button>
+                <SettingsDropdown />
                 <Button
                   type="button"
                   variant="outline"

@@ -90,26 +90,30 @@ model User {
 }
 
 model Workspace {
-  id             String        @id @default(cuid())
-  name           String
-  slug           String        @unique
-  companyName    String?
-  companyEmail   String?
-  companyPhone   String?
-  companyWebsite String?
-  companyEin     String?
-  companyAddress String?
-  companyCity    String?
-  companyState   String?
-  companyZip     String?
-  companyCountry String?
-  logoUrl        String?
-  members        Membership[]
-  customers      Customer[]
-  invoices       Invoice[]
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  defaultUsers   User[]        @relation("DefaultWorkspace")
+  id                 String        @id @default(cuid())
+  name               String
+  slug               String        @unique
+  companyName        String?
+  companyEmail       String?
+  companyPhone       String?
+  companyWebsite     String?
+  companyEin         String?
+  companyAddress     String?
+  companyCity        String?
+  companyState       String?
+  companyZip         String?
+  companyCountry     String?
+  logoUrl            String?
+  // Square integration fields
+  squareAccessToken  String?
+  squareLocationId   String?
+  squareEnvironment  String?       @default("sandbox") // sandbox | production
+  members            Membership[]
+  customers          Customer[]
+  invoices           Invoice[]
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  defaultUsers       User[]        @relation("DefaultWorkspace")
 }
 
 model Membership {

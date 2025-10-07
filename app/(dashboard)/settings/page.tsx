@@ -1,4 +1,5 @@
 import { EmailDeliveryCard } from "@/components/settings/email-delivery-card";
+import { SquareSetupCard } from "@/components/settings/square-setup-card";
 import { CompanySettingsForm } from "@/components/forms/company-settings-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,12 +9,14 @@ import { Switch } from "@/components/ui/switch";
 import { getCurrentUser } from "@/lib/auth";
 import { getEmailDomainInfo } from "@/lib/services/email-domain-service";
 import { getWorkspaceWithCompanyInfo } from "@/lib/services/workspace-service";
+import { getSquareConnectionStatus } from "@/lib/services/square-setup-service";
 import { updateCompanySettingsAction } from "./actions";
 
 export default async function SettingsPage() {
   const user = await getCurrentUser();
   const emailDomainInfo = await getEmailDomainInfo();
   const workspace = await getWorkspaceWithCompanyInfo(user.workspaceId);
+  const squareStatus = await getSquareConnectionStatus(user.workspaceId);
 
   if (!workspace) {
     throw new Error("Workspace not found");
@@ -27,6 +30,11 @@ export default async function SettingsPage() {
           <CardDescription>Manage branding, invoice templates, and payment preferences.</CardDescription>
         </CardHeader>
       </Card>
+
+      <SquareSetupCard 
+        isConnected={squareStatus.isConnected}
+        connectionStatus={squareStatus.locationName ? `${squareStatus.locationName} (${squareStatus.environment})` : squareStatus.error}
+      />
 
       <EmailDeliveryCard initialInfo={emailDomainInfo} />
 

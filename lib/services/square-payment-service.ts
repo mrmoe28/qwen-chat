@@ -2,7 +2,7 @@ import type { Invoice, InvoiceLine } from "@prisma/client";
 import { randomUUID } from "crypto";
 import { Square } from "square";
 
-import { getSquareClient, getSquareLocationId } from "@/lib/square";
+import { getSquareClientSync, getSquareLocationIdSync } from "@/lib/square";
 import { buildEmailUrl } from "@/lib/utils/email-helpers";
 
 function getSquarePaymentSuccessUrl(invoiceId: string): string {
@@ -41,8 +41,8 @@ export async function maybeCreateSquarePaymentLink(invoice: Invoice & { lineItem
     return null;
   }
   
-  const squareClient = getSquareClient();
-  const locationId = getSquareLocationId();
+  const squareClient = getSquareClientSync();
+  const locationId = getSquareLocationIdSync();
   
   if (!squareClient) {
     const error = 'Square client not available - check SQUARE_ACCESS_TOKEN and SQUARE_APPLICATION_ID environment variables';
