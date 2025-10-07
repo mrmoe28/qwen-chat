@@ -111,6 +111,7 @@ model Workspace {
   members            Membership[]
   customers          Customer[]
   invoices           Invoice[]
+  invoiceTemplates   InvoiceTemplate[]
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
   defaultUsers       User[]        @relation("DefaultWorkspace")
@@ -267,4 +268,30 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model InvoiceTemplate {
+  id               String                  @id @default(cuid())
+  name             String
+  description      String
+  category         String
+  defaultNotes     String?
+  defaultCurrency  String                  @default("USD")
+  isBuiltIn        Boolean                 @default(false)
+  workspace        Workspace               @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId      String
+  lineItems        InvoiceTemplateItem[]
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+}
+
+model InvoiceTemplateItem {
+  id           String          @id @default(cuid())
+  description  String
+  quantity     Int             @default(1)
+  sortOrder    Int             @default(0)
+  template     InvoiceTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  templateId   String
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 }
