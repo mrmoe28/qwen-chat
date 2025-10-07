@@ -157,7 +157,7 @@ export default function LandingPage() {
               Ready to streamline your invoicing?
             </h2>
             <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
-              Join thousands of service professionals who trust Ledgerflow to manage their billing and get paid faster.
+              Join thousands of service professionals who trust Ledgerflow to manage their billing and get paid faster today.
             </p>
             <Button size="lg" variant="secondary" asChild className="px-8 py-3">
               <Link href="/sign-up">
