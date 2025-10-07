@@ -1,25 +1,36 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { GuestService } from "@/lib/services/guest-service";
+import { generateProfessionalInvoiceHTML } from "@/lib/utils/invoice-template";
 
 interface GuestInvoice {
   id: string;
+  invoiceNumber: string;
   customerName: string;
+  customerEmail?: string;
   amount: number;
   description: string;
   createdAt: string;
+  dueDate: string;
   status: 'draft' | 'sent' | 'paid';
+  items: InvoiceItem[];
+}
+
+interface InvoiceItem {
+  description: string;
+  quantity: number;
+  rate: number;
+  amount: number;
 }
 
 export default function GuestInvoiceDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const [invoice, setInvoice] = useState<GuestInvoice | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -59,64 +70,15 @@ export default function GuestInvoiceDetailPage() {
   const handleDownload = () => {
     if (!invoice) return;
 
-    // Create a simple HTML invoice for download
-    const invoiceHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <title>Invoice - ${invoice.customerName}</title>
-        <style>
-          body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 20px; }
-          .header { text-align: center; margin-bottom: 40px; }
-          .invoice-details { display: flex; justify-content: space-between; margin-bottom: 40px; }
-          .amount { font-size: 24px; font-weight: bold; color: #333; }
-          .description { margin: 20px 0; }
-          .footer { margin-top: 40px; text-align: center; color: #666; font-size: 14px; }
-          @media print { body { padding: 20px; } }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <h1>INVOICE</h1>
-          <p>Created with Ledgerflow</p>
-        </div>
-        
-        <div class="invoice-details">
-          <div>
-            <h3>Bill To:</h3>
-            <p><strong>${invoice.customerName}</strong></p>
-          </div>
-          <div>
-            <h3>Invoice Details:</h3>
-            <p>Date: ${formatDate(invoice.createdAt)}</p>
-            <p>Status: ${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}</p>
-          </div>
-        </div>
-        
-        <div class="description">
-          <h3>Description:</h3>
-          <p>${invoice.description}</p>
-        </div>
-        
-        <div class="amount">
-          <h3>Total Amount: ${formatAmount(invoice.amount)}</h3>
-        </div>
-        
-        <div class="footer">
-          <p>Thank you for your business!</p>
-          <p>This invoice was created with Ledgerflow - Professional invoicing made simple</p>
-        </div>
-      </body>
-      </html>
-    `;
+    // Generate professional invoice HTML
+    const invoiceHtml = generateProfessionalInvoiceHTML(invoice);
 
     // Create and download the file
     const blob = new Blob([invoiceHtml], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `invoice-${invoice.customerName.replace(/\s+/g, '-').toLowerCase()}-${invoice.id}.html`;
+    a.download = `${invoice.invoiceNumber}-${invoice.customerName.replace(/\s+/g, '-').toLowerCase()}.html`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -179,7 +141,7 @@ export default function GuestInvoiceDetailPage() {
           <CardHeader>
             <div className="flex items-start justify-between">
               <div>
-                <CardTitle className="text-2xl">Invoice</CardTitle>
+                <CardTitle className="text-2xl">Invoice {invoice.invoiceNumber}</CardTitle>
                 <CardDescription>Created with Ledgerflow</CardDescription>
               </div>
               <div className="text-right">
@@ -192,7 +154,12 @@ export default function GuestInvoiceDetailPage() {
             {/* Customer Info */}
             <div>
               <h3 className="text-lg font-semibold mb-2">Bill To:</h3>
-              <p className="text-lg">{invoice.customerName}</p>
+              <div className="space-y-1">
+                <p className="text-lg font-medium">{invoice.customerName}</p>
+                {invoice.customerEmail && (
+                  <p className="text-muted-foreground">{invoice.customerEmail}</p>
+                )}
+              </div>
             </div>
 
             {/* Invoice Details */}
@@ -200,16 +167,45 @@ export default function GuestInvoiceDetailPage() {
               <div>
                 <h3 className="text-lg font-semibold mb-2">Invoice Details:</h3>
                 <div className="space-y-2">
+                  <p><span className="font-medium">Invoice #:</span> {invoice.invoiceNumber}</p>
                   <p><span className="font-medium">Date:</span> {formatDate(invoice.createdAt)}</p>
+                  <p><span className="font-medium">Due Date:</span> {formatDate(invoice.dueDate)}</p>
                   <p><span className="font-medium">Status:</span> {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}</p>
                 </div>
               </div>
             </div>
 
-            {/* Description */}
+            {/* Line Items */}
             <div>
-              <h3 className="text-lg font-semibold mb-2">Description:</h3>
-              <p className="text-muted-foreground">{invoice.description}</p>
+              <h3 className="text-lg font-semibold mb-4">Invoice Items:</h3>
+              <div className="border rounded-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-muted">
+                    <tr>
+                      <th className="text-left py-3 px-4">Description</th>
+                      <th className="text-center py-3 px-4">Qty</th>
+                      <th className="text-right py-3 px-4">Rate</th>
+                      <th className="text-right py-3 px-4">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {invoice.items.map((item, index) => (
+                      <tr key={index} className="border-t">
+                        <td className="py-3 px-4">{item.description}</td>
+                        <td className="text-center py-3 px-4">{item.quantity}</td>
+                        <td className="text-right py-3 px-4">{formatAmount(item.rate)}</td>
+                        <td className="text-right py-3 px-4 font-medium">{formatAmount(item.amount)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="border-t bg-muted/30 py-3 px-4">
+                  <div className="flex justify-between items-center font-semibold">
+                    <span>Total:</span>
+                    <span className="text-lg">{formatAmount(invoice.amount)}</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Actions */}

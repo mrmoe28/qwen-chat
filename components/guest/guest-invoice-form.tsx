@@ -12,6 +12,7 @@ import { GuestService } from "@/lib/services/guest-service";
 
 interface GuestInvoiceFormData {
   customerName: string;
+  customerEmail: string;
   amount: string;
   description: string;
 }
@@ -46,9 +47,9 @@ export function GuestInvoiceForm() {
 
       const invoice = GuestService.createInvoice({
         customerName: data.customerName.trim(),
+        customerEmail: data.customerEmail.trim(),
         amount: Math.round(amount * 100), // Convert to cents
         description: data.description.trim(),
-        status: 'draft',
       });
 
       if (!invoice) {
@@ -112,6 +113,25 @@ export function GuestInvoiceForm() {
               />
               {errors.customerName && (
                 <p className="text-sm text-destructive">{errors.customerName.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="customerEmail">Customer Email</Label>
+              <Input
+                id="customerEmail"
+                type="email"
+                placeholder="customer@example.com"
+                {...register("customerEmail", { 
+                  required: "Customer email is required",
+                  pattern: { 
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Please enter a valid email address"
+                  }
+                })}
+              />
+              {errors.customerEmail && (
+                <p className="text-sm text-destructive">{errors.customerEmail.message}</p>
               )}
             </div>
 

@@ -10,11 +10,22 @@ interface GuestSession {
 
 interface GuestInvoice {
   id: string;
+  invoiceNumber: string;
   customerName: string;
+  customerEmail?: string;
   amount: number;
   description: string;
   createdAt: string;
+  dueDate: string;
   status: 'draft' | 'sent' | 'paid';
+  items: InvoiceItem[];
+}
+
+interface InvoiceItem {
+  description: string;
+  quantity: number;
+  rate: number;
+  amount: number;
 }
 
 const GUEST_SESSION_KEY = 'ledgerflow_guest_session';
@@ -70,15 +81,37 @@ export class GuestService {
     return this.getInvoicesRemaining() > 0;
   }
 
-  static createInvoice(invoice: Omit<GuestInvoice, 'id' | 'createdAt'>): GuestInvoice | null {
+  static createInvoice(invoiceData: {
+    customerName: string;
+    customerEmail?: string;
+    description: string;
+    amount: number;
+  }): GuestInvoice | null {
     if (!this.canCreateInvoice()) return null;
     
     const session = this.initializeSession();
+    const invoiceNumber = this.generateInvoiceNumber(session.invoicesCreated + 1);
+    const createdAt = new Date();
+    const dueDate = new Date(createdAt.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 days from now
     
     const newInvoice: GuestInvoice = {
-      ...invoice,
       id: `inv_${Date.now()}_${Math.random().toString(36).substring(2)}`,
-      createdAt: new Date().toISOString(),
+      invoiceNumber,
+      customerName: invoiceData.customerName,
+      customerEmail: invoiceData.customerEmail,
+      amount: invoiceData.amount,
+      description: invoiceData.description,
+      createdAt: createdAt.toISOString(),
+      dueDate: dueDate.toISOString(),
+      status: 'draft',
+      items: [
+        {
+          description: invoiceData.description,
+          quantity: 1,
+          rate: invoiceData.amount,
+          amount: invoiceData.amount,
+        }
+      ],
     };
     
     session.invoices.push(newInvoice);
@@ -86,6 +119,13 @@ export class GuestService {
     
     this.saveSession(session);
     return newInvoice;
+  }
+
+  private static generateInvoiceNumber(count: number): string {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    return `INV-${year}${month}-${String(count).padStart(3, '0')}`;
   }
 
   static getInvoices(): GuestInvoice[] {

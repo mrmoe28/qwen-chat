@@ -10,7 +10,7 @@ export default function GuestPage() {
             Try Ledgerflow Free
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Create up to 3 professional invoices for free. No signup required to get started.
+            Create up to 3 professional invoices with all premium features. No signup required to get started.
           </p>
         </div>
 
@@ -27,7 +27,7 @@ export default function GuestPage() {
             </div>
             <h3 className="font-semibold">Professional Invoices</h3>
             <p className="text-sm text-muted-foreground">
-              Create beautiful, professional invoices in minutes
+              Auto-generated invoice numbers, due dates, and downloadable templates
             </p>
           </div>
           
