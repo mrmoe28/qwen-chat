@@ -79,6 +79,11 @@ export async function createAccount({ email, password, workspaceName }: CreateAc
           name: workspaceName?.trim() ?? null,
           passwordHash,
           defaultWorkspaceId: workspace.id,
+          // Trial fields with explicit defaults for safety
+          subscriptionStatus: "trial",
+          freeInvoicesUsed: 0,
+          freeInvoicesLimit: 3,
+          trialStartedAt: new Date(),
           memberships: {
             create: {
               workspaceId: workspace.id,

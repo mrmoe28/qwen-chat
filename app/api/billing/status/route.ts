@@ -18,6 +18,7 @@ export async function GET() {
         subscriptionId: true,
         subscriptionExpiry: true,
         squareCustomerId: true,
+        // Trial fields (may not exist in older users)
         freeInvoicesUsed: true,
         freeInvoicesLimit: true,
         trialStartedAt: true,
