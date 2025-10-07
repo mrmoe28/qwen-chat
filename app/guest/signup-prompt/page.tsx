@@ -45,7 +45,7 @@ export default function SignupPromptPage() {
             <div className="grid gap-4">
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center mt-0.5">
-                  <Icon name="infinity" className="w-4 h-4 text-primary" />
+                  <Icon name="plus" className="w-4 h-4 text-primary" />
                 </div>
                 <div>
                   <h4 className="font-semibold">Unlimited Invoices</h4>
