@@ -1,13 +1,9 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { compare } from "bcryptjs";
-import { Resend } from "resend";
 
 import { prisma } from "@/lib/prisma";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function resolveWorkspaceMeta(userId: string) {
   try {
@@ -76,36 +72,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
   providers: [
-    EmailProvider({
-      from: process.env.EMAIL_FROM || "noreply@ledgerflow.org",
-      async sendVerificationRequest({ identifier, url, provider }) {
-        try {
-          console.log("Attempting to send verification email to:", identifier);
-          console.log("Using from address:", provider.from);
-          console.log("Resend API key exists:", !!process.env.RESEND_API_KEY);
-          
-          const result = await resend.emails.send({
-            from: provider.from!,
-            to: identifier,
-            subject: "Sign in to Ledgerflow",
-            html: `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h1 style="color: #333;">Sign in to Ledgerflow</h1>
-                <p>Click the button below to sign in to your account:</p>
-                <a href="${url}" style="display: inline-block; background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">Sign In</a>
-                <p style="color: #666; font-size: 14px;">This link will expire in 24 hours. If you didn't request this email, you can safely ignore it.</p>
-              </div>
-            `,
-          });
-          
-          console.log("Email sent successfully:", result);
-        } catch (error) {
-          console.error("Failed to send verification email:", error);
-          console.error("Error details:", JSON.stringify(error, null, 2));
-          throw new Error("Failed to send verification email");
-        }
-      },
-    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
