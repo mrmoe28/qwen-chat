@@ -8,8 +8,8 @@ import { signOut, useSession } from "next-auth/react";
 import { dashboardNav, siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Icon } from "@/components/icons";
-import { SettingsDropdown } from "@/components/layout/settings-dropdown";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
@@ -70,7 +70,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="mt-auto hidden flex-col gap-2 rounded-lg bg-muted/40 p-4 text-sm text-muted-foreground lg:flex">
             <div className="flex items-center gap-3">
               <Icon name="shield" className="size-4" aria-hidden="true" />
-              Square Secure Payments
+              Stripe Secure Payments
             </div>
             <p>Collect card payments instantly with auto-reconciliation.</p>
           </div>
@@ -91,13 +91,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <span className="text-sm font-medium text-foreground">{workspaceName ?? siteConfig.name}</span>
                   <span>{userName ?? session?.user?.email ?? ""}</span>
                 </div>
+                <ThemeToggle />
                 <Button variant="secondary" className="hidden gap-2 lg:inline-flex" asChild>
                   <Link href="/invoices/new">
                     <Icon name="plus" className="size-4" />
                     New invoice
                   </Link>
                 </Button>
-                <SettingsDropdown />
                 <Button
                   type="button"
                   variant="outline"
