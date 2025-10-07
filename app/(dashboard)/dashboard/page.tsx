@@ -22,10 +22,32 @@ const statusVariant = {
 } as const;
 
 interface DashboardData {
-  invoices: any[];
-  payments: any[];
-  customers: any[];
-  user: any;
+  invoices: Array<{
+    id: string;
+    status: string;
+    total: number | null;
+    number: string;
+    issueDate: Date;
+    notes?: string | null;
+    customer: { businessName: string };
+  }>;
+  payments: Array<{
+    id: string;
+    status: string;
+    amount: number | null;
+    processedAt: Date | null;
+    invoice?: {
+      number: string;
+      issueDate: Date;
+      customer?: { businessName: string | null };
+    } | null;
+  }>;
+  customers: Array<{ id: string; businessName: string }>;
+  user: {
+    name?: string | null;
+    workspaceName?: string | null;
+    workspaceId: string;
+  };
 }
 
 export default function DashboardPage() {

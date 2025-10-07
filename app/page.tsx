@@ -73,7 +73,7 @@ export default function LandingPage() {
                 <Icon name="creditCard" className="h-8 w-8 text-primary mb-2" />
                 <CardTitle>Square Integration</CardTitle>
                 <CardDescription>
-                  Accept payments securely with Square's trusted payment processing
+                  Accept payments securely with Square&apos;s trusted payment processing
                 </CardDescription>
               </CardHeader>
               <CardContent>

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth-options";
@@ -7,7 +7,7 @@ import { listCustomers } from "@/lib/services/customer-service";
 import { listInvoices } from "@/lib/services/invoice-service";
 import { listPayments } from "@/lib/services/payment-service";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
