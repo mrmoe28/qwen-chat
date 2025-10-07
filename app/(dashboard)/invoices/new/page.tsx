@@ -22,7 +22,7 @@ export default async function NewInvoicePage({
   const resolvedSearchParams = await searchParams;
   const requestedCustomerId = resolvedSearchParams?.customerId;
   const requestedTemplate = resolvedSearchParams?.template;
-  const selectedTemplate = requestedTemplate ? getTemplate(requestedTemplate) : null;
+  const selectedTemplate = requestedTemplate ? await getTemplate(requestedTemplate, user.workspaceId) : null;
   const defaultCustomerId = customers.some((customer) => customer.id === requestedCustomerId)
     ? requestedCustomerId
     : undefined;
