@@ -23,6 +23,7 @@ import {
   type InvoiceFormValues,
   type InvoiceLineValues,
 } from "@/lib/validations/invoice";
+import { type InvoiceTemplate } from "@/lib/templates";
 
 const now = new Date();
 const defaultIssueDate = toInputDate(now);
@@ -74,9 +75,10 @@ type InvoiceFormProps = {
   customers: CustomerOption[];
   defaultCustomerId?: string;
   invoice?: InvoiceFormInvoice;
+  template?: InvoiceTemplate | null;
 };
 
-export function InvoiceForm({ customers, defaultCustomerId, invoice }: InvoiceFormProps) {
+export function InvoiceForm({ customers, defaultCustomerId, invoice, template }: InvoiceFormProps) {
   const router = useRouter();
   const isEdit = Boolean(invoice);
   const [formError, setFormError] = React.useState<string | null>(null);
@@ -120,24 +122,30 @@ export function InvoiceForm({ customers, defaultCustomerId, invoice }: InvoiceFo
       customerId: defaultCustomerId ?? customers[0]?.id ?? "",
       issueDate: defaultIssueDate,
       dueDate: defaultDueDate,
-      currency: "USD",
+      currency: template?.defaultCurrency ?? "USD",
       status: "DRAFT",
-      notes: "",
+      notes: template?.defaultNotes ?? "",
       enablePaymentLink: true,
       paymentProcessor: "SQUARE",
-      requiresDeposit: false,
-      depositType: "FIXED",
-      depositValue: 0,
-      depositDueDate: defaultDueDate,
-      lineItems: [
-        {
-          description: "",
-          quantity: 1,
-          unitPrice: 0,
-        },
-      ],
+      requiresDeposit: template?.id === "deposit-invoice",
+      depositType: "PERCENTAGE",
+      depositValue: template?.id === "deposit-invoice" ? 50 : 0,
+      depositDueDate: defaultIssueDate,
+      lineItems: template?.defaultLineItems.length 
+        ? template.defaultLineItems.map(item => ({
+            description: item.description,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+          }))
+        : [
+            {
+              description: "",
+              quantity: 1,
+              unitPrice: 0,
+            },
+          ],
     } satisfies InvoiceFormValues;
-  }, [customers, defaultCustomerId, invoice]);
+  }, [customers, defaultCustomerId, invoice, template]);
 
   const form = useForm<InvoiceFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

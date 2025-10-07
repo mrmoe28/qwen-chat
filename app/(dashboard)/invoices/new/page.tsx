@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth";
 import { listCustomers } from "@/lib/services/customer-service";
+import { getTemplate } from "@/lib/templates";
 
 export const metadata: Metadata = {
   title: "New invoice",
@@ -14,12 +15,14 @@ export const metadata: Metadata = {
 export default async function NewInvoicePage({
   searchParams,
 }: {
-  searchParams?: Promise<{ customerId?: string }>;
+  searchParams?: Promise<{ customerId?: string; template?: string }>;
 }) {
   const user = await getCurrentUser();
   const customers = await listCustomers(user.workspaceId);
   const resolvedSearchParams = await searchParams;
   const requestedCustomerId = resolvedSearchParams?.customerId;
+  const requestedTemplate = resolvedSearchParams?.template;
+  const selectedTemplate = requestedTemplate ? getTemplate(requestedTemplate) : null;
   const defaultCustomerId = customers.some((customer) => customer.id === requestedCustomerId)
     ? requestedCustomerId
     : undefined;
@@ -29,9 +32,14 @@ export default async function NewInvoicePage({
       <Card>
         <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <CardTitle className="text-2xl">New invoice</CardTitle>
+            <CardTitle className="text-2xl">
+              {selectedTemplate ? `New ${selectedTemplate.name}` : "New invoice"}
+            </CardTitle>
             <CardDescription>
-              Build an invoice, generate a Square payment link, and send it in minutes.
+              {selectedTemplate 
+                ? `Using ${selectedTemplate.name} template - ${selectedTemplate.description}`
+                : "Build an invoice, generate a Square payment link, and send it in minutes."
+              }
             </CardDescription>
           </div>
           <Button variant="outline" asChild>
@@ -59,6 +67,7 @@ export default async function NewInvoicePage({
                 email: customer.email,
               }))}
               defaultCustomerId={defaultCustomerId}
+              template={selectedTemplate}
             />
           </CardContent>
         </Card>
