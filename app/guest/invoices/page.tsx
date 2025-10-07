@@ -50,6 +50,71 @@ export default function GuestInvoicesPage() {
     }
   };
 
+  const downloadInvoice = (invoice: GuestInvoice) => {
+    // Create a simple HTML invoice for download
+    const invoiceHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Invoice - ${invoice.customerName}</title>
+        <style>
+          body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+          .header { text-align: center; margin-bottom: 40px; }
+          .invoice-details { display: flex; justify-content: space-between; margin-bottom: 40px; }
+          .amount { font-size: 24px; font-weight: bold; color: #333; }
+          .description { margin: 20px 0; }
+          .footer { margin-top: 40px; text-align: center; color: #666; font-size: 14px; }
+          @media print { body { padding: 20px; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>INVOICE</h1>
+          <p>Created with Ledgerflow</p>
+        </div>
+        
+        <div class="invoice-details">
+          <div>
+            <h3>Bill To:</h3>
+            <p><strong>${invoice.customerName}</strong></p>
+          </div>
+          <div>
+            <h3>Invoice Details:</h3>
+            <p>Date: ${formatDate(invoice.createdAt)}</p>
+            <p>Status: ${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}</p>
+          </div>
+        </div>
+        
+        <div class="description">
+          <h3>Description:</h3>
+          <p>${invoice.description}</p>
+        </div>
+        
+        <div class="amount">
+          <h3>Total Amount: ${formatAmount(invoice.amount)}</h3>
+        </div>
+        
+        <div class="footer">
+          <p>Thank you for your business!</p>
+          <p>This invoice was created with Ledgerflow - Professional invoicing made simple</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    // Create and download the file
+    const blob = new Blob([invoiceHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `invoice-${invoice.customerName.replace(/\s+/g, '-').toLowerCase()}-${invoice.id}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   if (invoices.length === 0) {
     return (
       <div className="min-h-screen bg-muted/50 px-4 py-8">
@@ -148,10 +213,16 @@ export default function GuestInvoicesPage() {
                   <div className="text-right space-y-2">
                     <p className="text-2xl font-bold">{formatAmount(invoice.amount)}</p>
                     <div className="space-x-2">
-                      <Button variant="outline" size="sm">
-                        View
-                      </Button>
-                      <Button variant="outline" size="sm">
+                      <Link href={`/guest/invoice/${invoice.id}`}>
+                        <Button variant="outline" size="sm">
+                          View
+                        </Button>
+                      </Link>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => downloadInvoice(invoice)}
+                      >
                         Download
                       </Button>
                     </div>
