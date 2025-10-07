@@ -9,13 +9,13 @@ export async function POST() {
       FROM information_schema.columns 
       WHERE table_name = 'User' 
       AND column_name IN ('freeInvoicesUsed', 'freeInvoicesLimit', 'trialStartedAt')
-    ` as any[];
+    ` as { column_name: string }[];
 
     if (hasColumns.length >= 3) {
       return NextResponse.json({ 
         success: true, 
         message: "Migration already applied",
-        columns: hasColumns.map((c: any) => c.column_name)
+        columns: hasColumns.map((c) => c.column_name)
       });
     }
 
