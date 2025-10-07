@@ -152,7 +152,7 @@ export default function ProductInvoicePreview() {
                       <td className="px-4 py-4 text-sm font-mono text-gray-600">MON-034</td>
                       <td className="px-4 py-4">
                         <div>
-                          <p className="font-medium text-gray-900">4K Monitor 27"</p>
+                          <p className="font-medium text-gray-900">4K Monitor 27&quot;</p>
                           <p className="text-sm text-gray-600">IPS Panel, USB-C, Height Adjustable</p>
                           <p className="text-xs text-gray-500">In Stock: 45 units</p>
                         </div>
