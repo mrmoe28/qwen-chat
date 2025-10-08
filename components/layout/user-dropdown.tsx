@@ -35,7 +35,7 @@ export function UserDropdown() {
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-2 rounded-full p-1 hover:bg-muted/50 transition-colors">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.imageUrl} alt={userName || "User"} />
+            <AvatarImage src={user?.imageUrl || undefined} alt={userName || "User"} />
             <AvatarFallback className="text-xs font-medium">
               {getInitials(userName)}
             </AvatarFallback>

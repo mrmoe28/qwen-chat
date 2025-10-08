@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Icon } from "@/components/icons";
-import { cn } from "@/lib/utils";
 
 type User = {
   id: string;
@@ -31,6 +30,7 @@ export function ProfileSettingsForm({ user, onSave }: ProfileSettingsFormProps) 
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(user.imageUrl);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -117,14 +117,16 @@ export function ProfileSettingsForm({ user, onSave }: ProfileSettingsFormProps) 
                 accept="image/*"
                 onChange={handleImageChange}
                 className="hidden"
-                id="profile-image"
+                ref={fileInputRef}
               />
-              <Label htmlFor="profile-image" asChild>
-                <Button variant="outline" className="cursor-pointer" type="button">
-                  <Icon name="plus" className="h-4 w-4 mr-2" />
-                  Change Picture
-                </Button>
-              </Label>
+              <Button 
+                variant="outline" 
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Icon name="plus" className="h-4 w-4 mr-2" />
+                Change Picture
+              </Button>
             </div>
             <p className="text-xs text-muted-foreground">
               JPG, PNG or GIF. Max file size 2MB.

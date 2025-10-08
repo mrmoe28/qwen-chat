@@ -100,6 +100,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             name: user.name,
             isAdmin: user.isAdmin,
+            imageUrl: user.imageUrl,
           };
         } catch (error) {
           console.error("Authentication error:", error);
@@ -116,16 +117,26 @@ export const authOptions: NextAuthOptions = {
           token.email = user.email;
           token.name = user.name;
           token.isAdmin = Boolean((user as { isAdmin?: boolean }).isAdmin);
+          token.imageUrl = (user as { imageUrl?: string }).imageUrl;
           const workspace = await resolveWorkspaceMeta(user.id);
           if (workspace) {
             token.workspaceId = workspace.id;
             token.workspaceName = workspace.name;
           }
-        } else if (token.sub && !token.workspaceId) {
+        } else if (token.sub && (!token.workspaceId || !token.imageUrl)) {
           const workspace = await resolveWorkspaceMeta(token.sub);
           if (workspace) {
             token.workspaceId = workspace.id;
             token.workspaceName = workspace.name;
+          }
+          
+          // Refresh user data including imageUrl
+          const userData = await prisma.user.findUnique({
+            where: { id: token.sub },
+            select: { imageUrl: true }
+          });
+          if (userData) {
+            token.imageUrl = userData.imageUrl;
           }
         }
 
@@ -142,6 +153,7 @@ export const authOptions: NextAuthOptions = {
           session.user.email = token.email as string | undefined;
           session.user.name = token.name as string | undefined;
           session.user.isAdmin = token.isAdmin as boolean | undefined;
+          session.user.imageUrl = token.imageUrl as string | undefined;
           if (token.workspaceId) {
             session.user.workspaceId = token.workspaceId as string;
             session.user.workspaceName = token.workspaceName as string | undefined;

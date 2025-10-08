@@ -7,6 +7,7 @@ declare module "next-auth" {
       email?: string | null;
       name?: string | null;
       isAdmin?: boolean;
+      imageUrl?: string | null;
       workspaceId: string;
       workspaceName?: string | null;
     };
@@ -14,6 +15,7 @@ declare module "next-auth" {
 
   interface User extends DefaultUser {
     isAdmin?: boolean;
+    imageUrl?: string | null;
     defaultWorkspaceId?: string | null;
   }
 }
@@ -21,6 +23,7 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     isAdmin?: boolean;
+    imageUrl?: string | null;
     workspaceId?: string;
     workspaceName?: string;
   }
