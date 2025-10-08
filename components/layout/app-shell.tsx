@@ -3,20 +3,17 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
 
 import { dashboardNav, siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Icon } from "@/components/icons";
+import { UserDropdown } from "@/components/layout/user-dropdown";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
-  const { data: session } = useSession();
-  const userName = session?.user?.name;
-  const workspaceName = session?.user?.workspaceName;
 
   React.useEffect(() => {
     setOpen(false);
@@ -87,10 +84,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <span className="sr-only">Toggle navigation</span>
               </Button>
               <div className="flex flex-1 items-center justify-end gap-3">
-                <div className="hidden flex-col text-right text-xs text-muted-foreground sm:flex">
-                  <span className="text-sm font-medium text-foreground">{workspaceName ?? siteConfig.name}</span>
-                  <span>{userName ?? session?.user?.email ?? ""}</span>
-                </div>
                 <ThemeToggle />
                 <Button variant="secondary" className="hidden gap-2 lg:inline-flex" asChild>
                   <Link href="/invoices/new">
@@ -98,15 +91,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     New invoice
                   </Link>
                 </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="gap-2"
-                  onClick={() => signOut({ callbackUrl: "/sign-in" })}
-                >
-                  <Icon name="logout" className="size-4" />
-                  Sign out
-                </Button>
+                <UserDropdown />
               </div>
             </div>
           </header>
