@@ -18,17 +18,25 @@ interface SignInValues {
 export function SignInForm() {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [formKey, setFormKey] = React.useState(0);
   
   const {
     register,
     handleSubmit,
     formState: { isSubmitting },
+    reset,
   } = useForm<SignInValues>({
     defaultValues: {
       email: "",
       password: "",
     },
   });
+
+  // Clear form and force re-render to prevent auto-fill
+  React.useEffect(() => {
+    reset({ email: "", password: "" });
+    setFormKey(prev => prev + 1);
+  }, [reset]);
 
   const onSubmit = async (values: SignInValues) => {
     setErrorMessage(null);
@@ -53,10 +61,16 @@ export function SignInForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form key={formKey} onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" autoComplete="email" {...register("email")} />
+        <Input 
+          id="email" 
+          type="email" 
+          placeholder="Enter your email address"
+          autoComplete="email"
+          {...register("email")} 
+        />
       </div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
@@ -68,7 +82,13 @@ export function SignInForm() {
             Forgot password?
           </Link>
         </div>
-        <Input id="password" type="password" autoComplete="current-password" {...register("password")} />
+        <Input 
+          id="password" 
+          type="password" 
+          placeholder="Enter your password"
+          autoComplete="current-password" 
+          {...register("password")} 
+        />
       </div>
       {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}
       <Button type="submit" className="w-full" disabled={isSubmitting}>
