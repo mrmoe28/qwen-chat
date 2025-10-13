@@ -39,8 +39,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico
-     * - public routes (sign-in, sign-up, forgot-password, payment-success, public, guest)
+     * - public routes (sign-in, sign-up, forgot-password, reset-password, payment-success, public, guest)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|sign-in|sign-up|forgot-password|payment-success|public|guest|$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sign-in|sign-up|forgot-password|reset-password|payment-success|public|guest|$).*)",
   ],
 };
