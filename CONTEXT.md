@@ -1,0 +1,64 @@
+# Ledgerflow - Project Context
+
+## Current Project State
+
+### Landing Page Configuration (Updated: 2025-10-13)
+- **Landing Page**: Now serves as the first page users see at `/` route
+- **Authentication**: Landing page is publicly accessible without sign-in
+- **Middleware Update**: Modified `middleware.ts` to exclude root path from authentication requirements
+  - Pattern updated to: `/((?!api|_next/static|_next/image|favicon.ico|sign-in|sign-up|forgot-password|payment-success|public|guest|$).*)`
+  - The `|$` addition allows the root path to be accessed without authentication
+- **Protected Routes**: Dashboard and authenticated routes still require sign-in
+
+### Landing Page Features
+- Professional splash page with Ledgerflow branding
+- Hero section: "Professional Invoicing Made Simple"
+- Two primary CTAs:
+  - "Try Free - No Signup Required" → `/guest` route
+  - "Sign Up for Full Access" → `/sign-up` route
+- Features showcase: Square Integration, Smart Reminders, Revenue Analytics
+- Responsive design with dark/light mode support
+
+## Architecture Notes
+
+### Authentication Flow
+- Public routes: `/`, `/sign-in`, `/sign-up`, `/guest`, `/public/*`, `/payment-success`
+- Protected routes: Everything under `/(dashboard)/*`
+- Middleware uses NextAuth's `withAuth` wrapper with custom security checks
+- Security: CVE-2025-29927 mitigation included (blocks x-middleware-subrequest header)
+
+### Tech Stack
+- Next.js 15.5.4 (App Router)
+- React 19.1.0
+- TypeScript 5.9.2
+- Tailwind CSS 4.1.13
+- Prisma 6.16.2 with PostgreSQL (NeonDB)
+- NextAuth 4.24.11
+- Stripe Integration (Payment Links)
+
+## Recent Changes
+
+### 2025-10-13: Fixed NextAuth JWT_SESSION_ERROR
+**Problem**: JWT decryption error on all pages - NEXTAUTH_SECRET was missing
+**Root Cause**: No `.env.local` file existed, causing NextAuth to fail session decryption
+**Solution**:
+  - Created `.env.local` with generated NEXTAUTH_SECRET and required environment variables
+  - Created `.env.example` as template for future setup
+  - Generated secure secret using `openssl rand -base64 32`
+**Files Created**: `.env.local`, `.env.example`
+**Result**: Application now runs without JWT errors, landing page loads successfully
+
+### 2025-10-13: Landing Page as First Page
+**Problem**: Root path was redirecting to sign-in page instead of showing landing page
+**Solution**: Updated middleware matcher to exclude root path from authentication
+**Files Modified**: `middleware.ts`
+**Result**: Users now see professional landing page first, with clear CTAs for guest mode or sign-up
+
+## Known Issues
+- Minor ESLint warnings in test files (unused variables)
+- Image optimization suggestion for avatar component (warning only)
+
+## Next Steps
+- Monitor user engagement with guest mode vs. sign-up conversion
+- Consider A/B testing different CTA copy
+- Add analytics tracking for landing page conversions

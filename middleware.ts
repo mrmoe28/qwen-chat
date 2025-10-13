@@ -31,5 +31,16 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|sign-in|sign-up|forgot-password|payment-success|public|guest).*)"],
+  matcher: [
+    /*
+     * Match all request paths except:
+     * - / (landing page)
+     * - api routes
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico
+     * - public routes (sign-in, sign-up, forgot-password, payment-success, public, guest)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico|sign-in|sign-up|forgot-password|payment-success|public|guest|$).*)",
+  ],
 };
