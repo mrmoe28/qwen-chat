@@ -1,15 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { createAccount } from "@/lib/services/account-service";
+import { rateLimit, rateLimitResponse, RATE_LIMIT_CONFIGS } from "@/lib/rate-limit";
 
 const requestSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 });
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Apply rate limiting: 5 attempts per 15 minutes
+    const rateLimitResult = await rateLimit(request, RATE_LIMIT_CONFIGS.auth);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult.remaining, rateLimitResult.resetAt);
+    }
+
     const body = await request.json();
     const parsed = requestSchema.safeParse(body);
     if (!parsed.success) {

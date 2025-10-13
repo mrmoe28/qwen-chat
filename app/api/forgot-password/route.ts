@@ -1,10 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { randomBytes } from "crypto";
 
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/services/notification-service";
 import { buildEmailUrl } from "@/lib/utils/email-helpers";
+import { rateLimit, rateLimitResponse, RATE_LIMIT_CONFIGS } from "@/lib/rate-limit";
 
 const requestSchema = z.object({
   email: z.string().email(),
@@ -112,8 +113,14 @@ Best regards,
 Ledgerflow Team`;
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Apply rate limiting: 3 attempts per hour
+    const rateLimitResult = await rateLimit(request, RATE_LIMIT_CONFIGS.passwordReset);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult.remaining, rateLimitResult.resetAt);
+    }
+
     const body = await request.json();
     const parsed = requestSchema.safeParse(body);
 

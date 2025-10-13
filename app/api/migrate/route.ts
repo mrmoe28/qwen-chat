@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/auth";
 
 export async function POST() {
+  // Require admin authentication
+  await requireAdmin();
   try {
     // Check if migration is needed
     const hasColumns = await prisma.$queryRaw`
