@@ -3,14 +3,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-
-interface SearchSource {
-  id: number;
-  title: string;
-  url: string;
-  domain: string;
-  snippet: string;
-}
+import type { SearchSource } from '@/types/chat';
 
 interface MarkdownMessageProps {
   content: string;
