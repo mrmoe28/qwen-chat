@@ -1,0 +1,8 @@
+{
+  "buildCommand": "TURBOPACK=0 npm run build",
+  "devCommand": "TURBOPACK=0 npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next"
+}
+
