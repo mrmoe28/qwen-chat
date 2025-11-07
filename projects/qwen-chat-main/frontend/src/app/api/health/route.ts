@@ -1,20 +1,20 @@
 import { NextRequest } from 'next/server';
 
 // Determine API base URL based on environment
-// In production (mrqwen.us), the backend should be accessible via the same domain
-// In development, use localhost
+// In production (Vercel), NEXT_PUBLIC_API_BASE must be set to the public backend URL
+// In development, defaults to localhost
 function getApiBase(request: NextRequest): string {
-  // Check for explicit environment variable first
+  // Always check environment variable first (required for production)
   if (process.env.NEXT_PUBLIC_API_BASE) {
     return process.env.NEXT_PUBLIC_API_BASE;
   }
   
-  // Try to detect if we're in production based on the request host
+  // Fallback: Try to detect if we're in production based on the request host
   const host = request.headers.get('host') || '';
   if (host && !host.includes('localhost') && !host.includes('127.0.0.1')) {
-    // Production: backend should be accessible via same domain
-    // For Cloudflare Tunnel, backend might be on localhost:8000 on the server
-    // but accessible via the tunnel. Use localhost since this runs server-side.
+    // Production detected but no env var set - this is an error
+    // Log warning but still try localhost (will fail, but gives clear error)
+    console.warn('⚠️ NEXT_PUBLIC_API_BASE not set in production! Backend calls will fail.');
     return 'http://localhost:8000';
   }
   
@@ -56,17 +56,9 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Check Ollama health
-    let ollamaStatus = 'unknown';
-    try {
-      const ollamaResponse = await fetch('http://localhost:11434/api/version', {
-        method: 'GET',
-        signal: AbortSignal.timeout(3000),
-      });
-      ollamaStatus = ollamaResponse.ok ? 'online' : 'offline';
-    } catch (error) {
-      ollamaStatus = 'offline';
-    }
+    // Backend already checks Ollama, so we trust its response
+    // Ollama runs locally and cannot be accessed from Vercel serverless functions
+    const ollamaStatus = backendData?.ollama_connected ? 'online' : 'offline';
 
     // Return 200 OK even if backend is offline - let the frontend handle the status
     return Response.json({
